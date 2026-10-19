@@ -8,15 +8,15 @@
 ## 1. O que este projeto é
 
 Um projeto Next.js 15 (App Router) com **todas as páginas** (públicas, área do usuário, admin).
-Ele **não tem nenhuma dependência do Supabase**: não lê tabelas, não tem chaves do Supabase e não
-fala com o Supabase Auth. Tanto a autenticação (login, logout, renovação de sessão, recuperação
+Ele **não acessa o banco de dados**: não lê tabelas e não tem nenhuma credencial do banco. Tanto
+a autenticação (login, logout, renovação de sessão, recuperação
 de senha) quanto toda leitura/escrita de dados de negócio (perguntas, respostas STAR, sessões de
 entrevista, perfil, conta, admin, pagamento) são feitas pelo projeto `carreirapro-backend`,
 chamado por HTTP.
 
 ## 2. Autenticação (feita pelo backend)
 
-- Quem fala com o Supabase Auth é **só o backend** (`/api/auth/login`, `/refresh`, `/logout`,
+- Quem valida senhas e emite tokens é **só o backend** (`/api/auth/login`, `/refresh`, `/logout`,
   `/forgot-password`, `/reset-password`). Este frontend apenas guarda, em cookies do seu próprio
   domínio, os tokens que o backend devolve (`src/lib/auth/tokens.ts`):
   - `cp_access` — access token (JWT curto). Não é httpOnly, porque `apiFetch` (componentes de
@@ -31,9 +31,9 @@ chamado por HTTP.
   via `/api/session/refresh` se o token expirar com a página aberta (e repete a chamada uma vez
   após um 401).
 - Recuperação de senha e convite pós-compra: o backend envia o e-mail com o link apontando para
-  `/redefinir-senha`. O Supabase redireciona para lá com um token temporário no fragmento da URL
-  (`#access_token=...`); a página o lê, limpa da barra de endereço e o envia ao backend
-  (`POST /api/auth/reset-password`). `/esqueci-senha` chama `POST /api/auth/forgot-password`
+  `/redefinir-senha`, com um token de uso único no fragmento da URL (`#token=...`); a página o
+  lê, limpa da barra de endereço e o envia ao backend no corpo de
+  `POST /api/auth/reset-password`, junto com a nova senha. `/esqueci-senha` chama `POST /api/auth/forgot-password`
   direto do navegador (rota pública; resposta sempre genérica).
 - Status/role também vêm do backend. Dois pontos fazem essa ponte:
   - `src/middleware.ts` (gating de `/app/*` e `/admin/*`): chama `GET /api/account/me` no
@@ -63,7 +63,7 @@ ver `docs/DOCUMENTATION.md` do backend).
 ## 4. Stack
 
 Next.js 15 (App Router) · React 19 · TypeScript 5 (strict) · Tailwind CSS 3 · Zod (validação de
-formulários) · Lucide React (ícones). Sem SDK do Supabase.
+formulários) · Lucide React (ícones). Sem acesso direto ao banco.
 
 ## 5. Estrutura de diretórios
 
@@ -89,14 +89,15 @@ src/
 ```
 
 **Nota sobre `src/types/database.ts`:** existe idêntico nos dois projetos, porque este frontend
-precisa dos tipos para tipar a UI mas não deve importar nenhum código do backend. Ao gerar tipos
-reais do Supabase (no backend), copie para cá e mantenha-os sincronizados manualmente.
+precisa dos tipos para tipar a UI mas não deve importar nenhum código do backend. Ao mudar o
+schema (migrations do backend), atualize os dois manualmente. Aqui as datas são `string` (formato
+JSON).
 
 ## 6. Fluxo de acesso
 
 Sem cadastro público — a venda é direta, com checkout em `/comprar` e pagamento via Mercado Pago
 (processado pelo backend). O acesso é criado pelo webhook do backend via
-`supabase.auth.admin.inviteUserByEmail`, com o link do convite levando a `/redefinir-senha`
+criação do usuário (sem senha) e envio de um e-mail de convite, com o link levando a `/redefinir-senha`
 (onde o comprador define a senha). Login por e-mail/senha (`/login`), recuperação de senha
 com mensagem genérica (`/esqueci-senha`), e definição de nova senha via link de uso único
 (`/redefinir-senha`) — tudo executado pelo backend (seção 2). Autorização checada em duas camadas: middleware (chamando o
@@ -111,8 +112,7 @@ Ver `.env.example`. Nenhum valor real está commitado.
 | `NEXT_PUBLIC_API_URL` | Toda chamada ao backend falha (erro explícito, "NEXT_PUBLIC_API_URL não configurado"), incluindo login. |
 | `NEXT_PUBLIC_GA_ID` / `NEXT_PUBLIC_GTM_ID` / `NEXT_PUBLIC_META_PIXEL_ID` | Nenhum script de analytics/marketing carrega, independentemente do consentimento. |
 
-Note o que **não** está aqui: qualquer variável do Supabase (`NEXT_PUBLIC_SUPABASE_*`,
-`SUPABASE_SERVICE_ROLE_KEY`), `MERCADOPAGO_*`,
+Note o que **não** está aqui: `DATABASE_URL`, `JWT_SECRET`, `SMTP_*`, `MERCADOPAGO_*`,
 `CHECKOUT_PRODUCT_PRICE_BRL`, chaves de IA/transcrição — nenhuma dessas variáveis deve existir
 neste projeto. Elas vivem somente no backend.
 
@@ -134,20 +134,18 @@ projeto não tem suíte de testes própria neste momento.
 
 1. Fazer o deploy do backend primeiro (`carreirapro-backend`) e anotar sua URL pública.
 2. Preencher `.env.example` deste frontend, com `NEXT_PUBLIC_API_URL` apontando para essa URL.
-3. Fazer o deploy deste frontend (Vercel ou outro host Node) — projeto separado do backend, com
-   sua própria URL.
+3. `npm ci && npm run build && npm start` no servidor (porta 3000 por padrão), mantido por PM2
+   e atrás do Nginx com HTTPS — projeto separado do backend, com sua própria URL. As variáveis
+   `NEXT_PUBLIC_*` são gravadas no build: ao mudar alguma, rode o build de novo.
 4. No backend, configurar `FRONTEND_ORIGIN` com a URL exata deste frontend (para o CORS liberar
    as chamadas feitas pelo navegador).
 
-Ver `docs/DEPLOY_VERCEL_HOSTINGER.md` para o passo a passo completo (Vercel + domínio na
-Hostinger), cobrindo os dois projetos — incluindo como apontar os subdomínios (ex.: `app.` para
-este frontend e `api.` para o backend).
+Ver `docs/DEPLOY.md` para o passo a passo completo em servidor próprio, cobrindo os dois
+projetos e o PostgreSQL — incluindo como apontar os subdomínios (ex.: `app.` para este frontend e
+`api.` para o backend).
 
 ## 11. Pendências que dependem de credenciais/decisão humana
 
-- **Supabase**: nenhum projeto real foi criado neste ambiente (sem acesso de rede). Ao criar,
-  inclua `<FRONTEND_ORIGIN>/redefinir-senha` em Authentication → URL Configuration → Redirect
-  URLs (links de recuperação e convite apontam para lá).
 - **Backend**: este frontend depende do `carreirapro-backend` estar rodando e acessível em
   `NEXT_PUBLIC_API_URL` — sem isso, toda tela que precisa de dados (dashboard, perguntas,
   simulador, STAR, perfil, admin) mostra erro.

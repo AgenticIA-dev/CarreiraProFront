@@ -16,7 +16,7 @@ import {
  *  - `/admin/*` exige usuário autenticado, "active" e role "admin".
  *  - Nunca confiamos em nada vindo do cliente para decidir isso.
  *
- * Este frontend não fala com o Supabase nem lê `public.users`: a sessão são
+ * Este frontend não acessa o banco nem lê a tabela `users`: a sessão são
  * os cookies emitidos a partir das respostas do backend (ver
  * `src/lib/auth/tokens.ts`), e o status/role reais vêm do backend
  * (`GET /api/account/me`), que valida o token e relê o banco a cada chamada.

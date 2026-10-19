@@ -15,8 +15,8 @@ negócio é chamada do projeto **`carreirapro-backend`** por HTTP.
 Arquitetura, como a autenticação se conecta ao backend, variáveis de ambiente e pendências:
 [`docs/DOCUMENTATION.md`](./docs/DOCUMENTATION.md).
 
-Deploy (Vercel + domínio na Hostinger, cobrindo os dois projetos):
-[`docs/DEPLOY_VERCEL_HOSTINGER.md`](./docs/DEPLOY_VERCEL_HOSTINGER.md).
+Deploy em servidor próprio (frontend, backend e PostgreSQL, com Nginx e PM2):
+[`docs/DEPLOY.md`](./docs/DEPLOY.md).
 
 ## Quick start
 

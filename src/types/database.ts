@@ -1,16 +1,10 @@
 /**
- * Tipos do banco de dados.
+ * Tipos das linhas do banco de dados, no formato em que chegam pela API do
+ * backend (JSON — datas como string ISO 8601).
  *
- * Em um ambiente com Supabase CLI configurado, este arquivo deve ser gerado
- * automaticamente a partir do schema real com:
- *
- *   npm run db:types
- *   (supabase gen types typescript --local > src/types/database.ts)
- *
- * Os tipos abaixo foram escritos manualmente a partir de
- * `supabase/migrations/0001_init.sql` para permitir type-checking sem uma
- * instância do Supabase disponível neste ambiente. Substitua por tipos
- * gerados assim que houver um projeto Supabase configurado.
+ * Espelham `src/types/database.ts` do backend (que os gera a partir das
+ * entidades TypeORM); mantenha os dois sincronizados manualmente. Este
+ * projeto não acessa o banco.
  */
 
 export type UserStatus =
@@ -149,43 +143,4 @@ export interface WebhookEventRow {
   status: "received" | "processed" | "ignored" | "error";
   error_message: string | null;
   created_at: string;
-}
-
-/**
- * Formato mínimo compatível com o tipo `Database` esperado pelo cliente
- * tipado do Supabase (`createClient<Database>()`).
- */
-export interface Database {
-  public: {
-    Tables: {
-      users: { Row: UserRow; Insert: Partial<UserRow>; Update: Partial<UserRow> };
-      purchases: { Row: PurchaseRow; Insert: Partial<PurchaseRow>; Update: Partial<PurchaseRow> };
-      questions: { Row: QuestionRow; Insert: Partial<QuestionRow>; Update: Partial<QuestionRow> };
-      star_responses: {
-        Row: StarResponseRow;
-        Insert: Partial<StarResponseRow>;
-        Update: Partial<StarResponseRow>;
-      };
-      interview_sessions: {
-        Row: InterviewSessionRow;
-        Insert: Partial<InterviewSessionRow>;
-        Update: Partial<InterviewSessionRow>;
-      };
-      consent_records: {
-        Row: ConsentRecordRow;
-        Insert: Partial<ConsentRecordRow>;
-        Update: Partial<ConsentRecordRow>;
-      };
-      data_requests: {
-        Row: DataRequestRow;
-        Insert: Partial<DataRequestRow>;
-        Update: Partial<DataRequestRow>;
-      };
-      webhook_events: {
-        Row: WebhookEventRow;
-        Insert: Partial<WebhookEventRow>;
-        Update: Partial<WebhookEventRow>;
-      };
-    };
-  };
 }

@@ -60,7 +60,7 @@ export default function PrivacidadePage() {
           <p className="mt-2">
             Podemos compartilhar dados estritamente necessários com prestadores de serviço que nos
             ajudam a operar a plataforma: processamento de pagamento (Mercado Pago), hospedagem e banco
-            de dados (Supabase), e, quando configurados, provedores de transcrição de áudio e de
+            de dados, e, quando configurados, provedores de transcrição de áudio e de
             inteligência artificial usados para gerar feedback de treinamento. Não vendemos dados
             pessoais.
           </p>

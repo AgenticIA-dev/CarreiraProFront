@@ -11,8 +11,8 @@ export const metadata: Metadata = { title: "Perguntas — Admin" };
  * Listagem administrativa de perguntas. A criação/edição completa (CRUD via
  * formulário) fica como próximo passo documentado em docs/DOCUMENTATION.md
  * — fora do escopo enxuto do MVP (PROMPT MESTRE §50), mas a leitura já usa
- * dados reais do banco, com escrita disponível diretamente via Supabase
- * Studio ou pelo script `scripts/seed-questions.ts` enquanto o CRUD não é
+ * dados reais do banco, com escrita disponível diretamente no PostgreSQL
+ * ou pelo script `npm run seed` (backend) enquanto o CRUD não é
  * implementado.
  */
 export default async function AdminPerguntasPage() {

@@ -14,10 +14,10 @@ const EXPIRED_LINK_MESSAGE =
 /**
  * Página acessada a partir do link de e-mail — recuperação de senha ou
  * convite enviado após a compra (os dois são montados pelo backend).
- * O Supabase redireciona para cá com um access token temporário no
- * fragmento da URL (`#access_token=...`), que nunca chega a nenhum servidor
- * por si só; a página o lê, limpa da barra de endereço e o envia ao backend
- * (`POST /api/auth/reset-password`) junto com a nova senha.
+ * O link traz um token de uso único no fragmento da URL (`#token=...`), que
+ * nunca chega a nenhum servidor por si só; a página o lê, limpa da barra de
+ * endereço e o envia ao backend (`POST /api/auth/reset-password`) junto com
+ * a nova senha.
  */
 export default function RedefinirSenhaPage() {
   const router = useRouter();
@@ -31,7 +31,7 @@ export default function RedefinirSenhaPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.hash.slice(1));
-    const token = params.get("access_token");
+    const token = params.get("token");
     if (token) {
       setLinkToken(token);
       window.history.replaceState(null, "", window.location.pathname);
@@ -64,8 +64,8 @@ export default function RedefinirSenhaPage() {
     try {
       const response = await fetch(apiUrl("/api/auth/reset-password"), {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${linkToken}` },
-        body: JSON.stringify(parsed.data),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...parsed.data, token: linkToken }),
       });
       if (!response.ok) {
         const data = (await response.json().catch(() => null)) as { error?: string } | null;

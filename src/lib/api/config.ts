@@ -1,6 +1,6 @@
 /**
- * Base URL do backend (`carreirapro-backend`). Pública por design — assim
- * como a URL do Supabase, não é um segredo; a segurança vem da validação do
+ * Base URL do backend (`carreirapro-backend`). Pública por design — não é
+ * um segredo; a segurança vem da validação do
  * token em cada rota do backend, não do sigilo desta URL.
  */
 export function getApiBaseUrl(): string {

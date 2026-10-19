@@ -5,7 +5,7 @@ import { getApiBaseUrl } from "@/lib/api/config";
  * Sessão do usuário neste frontend.
  *
  * Toda a autenticação (login, renovação, logout, recuperação de senha) é
- * feita pelo backend (`/api/auth/*`) — este projeto não fala com o Supabase.
+ * feita pelo backend (`/api/auth/*`) — este projeto não acessa o banco.
  * Ele só guarda, em cookies do seu próprio domínio, os tokens que o backend
  * devolve:
  *
