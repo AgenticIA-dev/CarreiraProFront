@@ -26,4 +26,4 @@ cp .env.example .env.local   # preencher com valores reais (e com o backend já 
 npm run dev                  # http://localhost:3000
 ```
 
-Stack: Next.js 15 · React 19 · TypeScript · Tailwind CSS · `@supabase/ssr` (sessão).
+Stack: Next.js 15 · React 19 · TypeScript · Tailwind CSS. A autenticação é feita pelo backend (`/api/auth/*`).

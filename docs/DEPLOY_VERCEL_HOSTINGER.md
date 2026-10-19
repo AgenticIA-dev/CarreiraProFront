@@ -69,8 +69,7 @@ git init && git add . && git commit -m "CarreiraPro frontend — versão inicial
 
 1. Em [vercel.com/new](https://vercel.com/new), importe o repositório do frontend (**um segundo
    projeto Vercel**, separado do backend).
-2. Variáveis de ambiente (copie de `.env.example` do frontend):
-   - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+2. Variáveis de ambiente (copie de `.env.example` do frontend — nenhuma do Supabase):
    - `NEXT_PUBLIC_API_URL` → `https://api.seudominio.com.br` (a URL do backend do passo 3)
    - `NEXT_PUBLIC_APP_URL` → `https://app.seudominio.com.br` (a URL final deste frontend)
    - `NEXT_PUBLIC_GA_ID` / `NEXT_PUBLIC_GTM_ID` / `NEXT_PUBLIC_META_PIXEL_ID` (opcionais)

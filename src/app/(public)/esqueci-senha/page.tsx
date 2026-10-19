@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { apiUrl } from "@/lib/api/client";
 import { forgotPasswordSchema } from "@/lib/validation/schemas";
 import { Button } from "@/components/ui/Button";
 import { Input, Label, FieldError } from "@/components/ui/Input";
@@ -31,9 +31,13 @@ export default function EsqueciSenhaPage() {
 
     setIsLoading(true);
     try {
-      const supabase = createSupabaseBrowserClient();
-      const redirectTo = `${window.location.origin}/redefinir-senha`;
-      await supabase.auth.resetPasswordForEmail(parsed.data.email, { redirectTo });
+      // O backend monta o link de redefinição (nunca aceita a URL do cliente)
+      // e sempre responde igual, exista ou não o e-mail.
+      await fetch(apiUrl("/api/auth/forgot-password"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsed.data),
+      });
     } catch {
       // Independentemente de erro técnico, não revelamos detalhes: a UI
       // sempre mostra a mensagem genérica de sucesso a seguir.

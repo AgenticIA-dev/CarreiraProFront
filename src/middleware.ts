@@ -1,5 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { updateSupabaseSession } from "@/lib/supabase/middleware";
+import {
+  ACCESS_COOKIE,
+  REFRESH_COOKIE,
+  clearSessionCookies,
+  refreshSessionTokens,
+  setSessionCookies,
+  type SessionTokens,
+} from "@/lib/auth/tokens";
 
 /**
  * Proteção de rotas server-side.
@@ -9,27 +16,22 @@ import { updateSupabaseSession } from "@/lib/supabase/middleware";
  *  - `/admin/*` exige usuário autenticado, "active" e role "admin".
  *  - Nunca confiamos em nada vindo do cliente para decidir isso.
  *
- * Diferente da versão anterior (projeto único): este frontend não tem mais
- * a service role key nem acesso direto a `public.users` — o status/role
- * reais são obtidos chamando o backend (`GET /api/account/me`) com o token
- * da sessão atual. O backend é quem relê isso do banco a cada chamada.
+ * Este frontend não fala com o Supabase nem lê `public.users`: a sessão são
+ * os cookies emitidos a partir das respostas do backend (ver
+ * `src/lib/auth/tokens.ts`), e o status/role reais vêm do backend
+ * (`GET /api/account/me`), que valida o token e relê o banco a cada chamada.
+ *
+ * Se o access token expirou mas ainda há refresh token, a sessão é renovada
+ * aqui (via backend) antes de seguir — e o token novo é repassado também à
+ * própria requisição, para que os Server Components desta navegação já o
+ * enxerguem.
  */
 export async function middleware(request: NextRequest) {
-  const { response, user, accessToken } = await updateSupabaseSession(request);
   const { pathname } = request.nextUrl;
-
-  const isProtectedApp = pathname.startsWith("/app");
   const isAdmin = pathname.startsWith("/admin");
 
-  if (!isProtectedApp && !isAdmin) {
-    return response;
-  }
-
-  if (!user || !accessToken) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("redirectTo", pathname);
-    return NextResponse.redirect(loginUrl);
-  }
+  const loginUrl = new URL("/login", request.url);
+  loginUrl.searchParams.set("redirectTo", pathname);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   if (!apiUrl) {
@@ -37,12 +39,39 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login?erro=configuracao", request.url));
   }
 
+  let accessToken = request.cookies.get(ACCESS_COOKIE)?.value;
+  const refreshToken = request.cookies.get(REFRESH_COOKIE)?.value;
+  let refreshed: SessionTokens | null = null;
+
+  if (!accessToken && refreshToken) {
+    refreshed = await refreshSessionTokens(refreshToken);
+    if (refreshed) {
+      accessToken = refreshed.access_token;
+      request.cookies.set(ACCESS_COOKIE, refreshed.access_token);
+      request.cookies.set(REFRESH_COOKIE, refreshed.refresh_token);
+    }
+  }
+
+  if (!accessToken) {
+    const response = NextResponse.redirect(loginUrl);
+    clearSessionCookies(response);
+    return response;
+  }
+
   let status: string | null = null;
   let role: string | null = null;
   try {
     const meResponse = await fetch(`${apiUrl.replace(/\/+$/, "")}/api/account/me`, {
       headers: { Authorization: `Bearer ${accessToken}` },
+      cache: "no-store",
     });
+
+    if (meResponse.status === 401) {
+      // Token inválido/revogado — sessão encerrada.
+      const response = NextResponse.redirect(loginUrl);
+      clearSessionCookies(response);
+      return response;
+    }
 
     if (meResponse.ok) {
       const data = (await meResponse.json()) as { profile?: { status?: string; role?: string } };
@@ -55,14 +84,18 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login?erro=configuracao", request.url));
   }
 
+  let response: NextResponse;
   if (status !== "active") {
-    return NextResponse.redirect(new URL("/login?erro=inativo", request.url));
+    response = NextResponse.redirect(new URL("/login?erro=inativo", request.url));
+  } else if (isAdmin && role !== "admin") {
+    response = NextResponse.redirect(new URL("/app", request.url));
+  } else {
+    response = NextResponse.next({ request });
   }
 
-  if (isAdmin && role !== "admin") {
-    return NextResponse.redirect(new URL("/app", request.url));
+  if (refreshed) {
+    setSessionCookies(response, refreshed);
   }
-
   return response;
 }
 

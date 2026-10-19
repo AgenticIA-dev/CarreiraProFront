@@ -1,26 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { apiUrl } from "@/lib/api/client";
 import { resetPasswordSchema } from "@/lib/validation/schemas";
 import { Button } from "@/components/ui/Button";
 import { Input, Label, FieldError } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
 
+const EXPIRED_LINK_MESSAGE =
+  "Não foi possível redefinir sua senha. O link pode ter expirado — solicite um novo.";
+
 /**
- * Página acessada a partir do link de redefinição enviado por e-mail.
- * O Supabase já cria uma sessão temporária de recuperação ao seguir o link
- * (token de uso único, com expiração controlada pelo Supabase Auth).
+ * Página acessada a partir do link de e-mail — recuperação de senha ou
+ * convite enviado após a compra (os dois são montados pelo backend).
+ * O Supabase redireciona para cá com um access token temporário no
+ * fragmento da URL (`#access_token=...`), que nunca chega a nenhum servidor
+ * por si só; a página o lê, limpa da barra de endereço e o envia ao backend
+ * (`POST /api/auth/reset-password`) junto com a nova senha.
  */
 export default function RedefinirSenhaPage() {
   const router = useRouter();
+  const [linkToken, setLinkToken] = useState<string | null>(null);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.hash.slice(1));
+    const token = params.get("access_token");
+    if (token) {
+      setLinkToken(token);
+      window.history.replaceState(null, "", window.location.pathname);
+    } else {
+      setFormError(EXPIRED_LINK_MESSAGE);
+    }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -37,14 +55,21 @@ export default function RedefinirSenhaPage() {
       return;
     }
 
+    if (!linkToken) {
+      setFormError(EXPIRED_LINK_MESSAGE);
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const supabase = createSupabaseBrowserClient();
-      const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
-      if (error) {
-        setFormError(
-          "Não foi possível redefinir sua senha. O link pode ter expirado — solicite um novo."
-        );
+      const response = await fetch(apiUrl("/api/auth/reset-password"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${linkToken}` },
+        body: JSON.stringify(parsed.data),
+      });
+      if (!response.ok) {
+        const data = (await response.json().catch(() => null)) as { error?: string } | null;
+        setFormError(data?.error ?? EXPIRED_LINK_MESSAGE);
         return;
       }
       setDone(true);

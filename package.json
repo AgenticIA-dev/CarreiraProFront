@@ -2,7 +2,7 @@
   "name": "carreirapro-frontend",
   "version": "0.1.0",
   "private": true,
-  "description": "CarreiraPro — frontend (UI + autenticação). Toda a lógica de negócio, pagamentos e integrações vive no projeto carreirapro-backend, chamado via NEXT_PUBLIC_API_URL.",
+  "description": "CarreiraPro — frontend (UI). Toda a lógica de negócio, autenticação, pagamentos e integrações vive no projeto carreirapro-backend, chamado via NEXT_PUBLIC_API_URL.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -14,8 +14,6 @@
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@supabase/supabase-js": "^2.47.10",
-    "@supabase/ssr": "^0.5.2",
     "zod": "^3.24.1",
     "lucide-react": "^0.469.0",
     "clsx": "^2.1.1",

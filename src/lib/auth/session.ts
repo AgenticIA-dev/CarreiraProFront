@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { apiFetchServer } from "@/lib/api/server";
 import type { UserRow } from "@/types/database";
 
@@ -9,20 +8,10 @@ import type { UserRow } from "@/types/database";
  * de páginas dentro de /app e /admin (o middleware já bloqueia o acesso,
  * esta função é a segunda camada, necessária para obter os dados do perfil).
  *
- * Este frontend não lê mais `public.users` diretamente — quem tem essa
- * verdade agora é o backend (`GET /api/account/me`), chamado aqui com o
- * token da sessão atual.
+ * Quem valida a sessão e lê `public.users` é o backend
+ * (`GET /api/account/me`), chamado aqui com o token da sessão atual.
  */
 export async function requireUser(): Promise<{ authId: string; email: string; profile: UserRow }> {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
   const response = await apiFetchServer("/api/account/me");
 
   if (!response.ok) {
@@ -35,7 +24,7 @@ export async function requireUser(): Promise<{ authId: string; email: string; pr
     redirect("/login?erro=inativo");
   }
 
-  return { authId: user.id, email: email ?? user.email ?? profile.email, profile };
+  return { authId: profile.id, email: email ?? profile.email, profile };
 }
 
 /**

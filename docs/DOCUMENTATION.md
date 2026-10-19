@@ -1,4 +1,4 @@
-# CarreiraPro — Frontend (UI + autenticação)
+# CarreiraPro — Frontend (UI)
 
 > Este é o projeto **frontend** do CarreiraPro, separado do backend a pedido do usuário
 > (15/10/2026). Antes, frontend e backend eram um único projeto Next.js; agora são dois deploys
@@ -7,33 +7,50 @@
 
 ## 1. O que este projeto é
 
-Um projeto Next.js 15 (App Router) com **todas as páginas** (públicas, área do usuário, admin) e
-a **autenticação** (sessão Supabase via `@supabase/ssr`, com cookies). Ele nunca lê tabelas do
-Postgres diretamente nem tem a service role key — toda leitura/escrita de dados de negócio
-(perguntas, respostas STAR, sessões de entrevista, perfil, conta, admin, pagamento) é feita pelo
-projeto `carreirapro-backend`, chamado por HTTP.
+Um projeto Next.js 15 (App Router) com **todas as páginas** (públicas, área do usuário, admin).
+Ele **não tem nenhuma dependência do Supabase**: não lê tabelas, não tem chaves do Supabase e não
+fala com o Supabase Auth. Tanto a autenticação (login, logout, renovação de sessão, recuperação
+de senha) quanto toda leitura/escrita de dados de negócio (perguntas, respostas STAR, sessões de
+entrevista, perfil, conta, admin, pagamento) são feitas pelo projeto `carreirapro-backend`,
+chamado por HTTP.
 
-## 2. Por que a separação muda a autenticação
+## 2. Autenticação (feita pelo backend)
 
-- A sessão do usuário (login, logout, recuperação/troca de senha) continua sendo gerenciada
-  **aqui**, via `@supabase/ssr` e cookies — isso não muda, porque é puramente autenticação, não
-  acesso a dados de negócio.
-- O que muda é que este frontend não confia mais em si mesmo para decidir status/role — ele pede
-  isso ao backend. Dois pontos fazem essa ponte:
-  - `src/middleware.ts` (gating de `/app/*` e `/admin/*`): em vez de consultar
-    `public.users` diretamente com a service role key (que este projeto não tem mais), chama
-    `GET /api/account/me` no backend com o access token da sessão.
+- Quem fala com o Supabase Auth é **só o backend** (`/api/auth/login`, `/refresh`, `/logout`,
+  `/forgot-password`, `/reset-password`). Este frontend apenas guarda, em cookies do seu próprio
+  domínio, os tokens que o backend devolve (`src/lib/auth/tokens.ts`):
+  - `cp_access` — access token (JWT curto). Não é httpOnly, porque `apiFetch` (componentes de
+    cliente) precisa lê-lo para enviar `Authorization: Bearer`. Expira 60 s antes do token.
+  - `cp_refresh` — refresh token, **httpOnly** (o JavaScript da página nunca o vê).
+- Route Handlers deste frontend (mesma origem da página) fazem a ponte com o backend e gravam/
+  apagam os cookies: `POST /api/session/login`, `POST /api/session/logout` e
+  `POST /api/session/refresh`. O login exige `Content-Type: application/json` (força preflight
+  de CORS, bloqueando login CSRF a partir de outros sites).
+- Renovação: o middleware renova a sessão (via backend) quando `cp_access` expirou mas
+  `cp_refresh` ainda existe, antes de renderizar `/app/*` e `/admin/*`; `apiFetch` faz o mesmo
+  via `/api/session/refresh` se o token expirar com a página aberta (e repete a chamada uma vez
+  após um 401).
+- Recuperação de senha e convite pós-compra: o backend envia o e-mail com o link apontando para
+  `/redefinir-senha`. O Supabase redireciona para lá com um token temporário no fragmento da URL
+  (`#access_token=...`); a página o lê, limpa da barra de endereço e o envia ao backend
+  (`POST /api/auth/reset-password`). `/esqueci-senha` chama `POST /api/auth/forgot-password`
+  direto do navegador (rota pública; resposta sempre genérica).
+- Status/role também vêm do backend. Dois pontos fazem essa ponte:
+  - `src/middleware.ts` (gating de `/app/*` e `/admin/*`): chama `GET /api/account/me` no
+    backend com o access token da sessão (401 → apaga os cookies e manda para `/login`).
   - `src/lib/auth/session.ts` (`requireUser`/`requireAdmin`, usados nos layouts): mesma ideia,
     via `src/lib/api/server.ts`.
 - Toda chamada de dado de negócio (Server Component ou componente de cliente) usa um dos
   helpers em `src/lib/api/`:
   - `apiFetch` (`src/lib/api/client.ts`) — para componentes `"use client"`. Pega o access token
-    da sessão no navegador e chama o backend com `Authorization: Bearer <token>`.
+    do cookie `cp_access` e chama o backend com `Authorization: Bearer <token>`.
   - `apiFetchServer` (`src/lib/api/server.ts`) — para Server Components/Route Handlers deste
-    frontend. Mesma ideia, pegando o token dos cookies da requisição.
+    frontend. Mesma ideia, pegando o token do cookie da requisição.
   - `apiUrl` (`src/lib/api/client.ts`) — monta a URL do backend para chamadas públicas (sem
-    sessão), como o checkout (`/comprar`) e o registro de consentimento de cookies.
-- Nenhuma dessas chamadas depende de cookies entre origens — tudo via Bearer token, que
+    sessão), como o checkout (`/comprar`), o registro de consentimento de cookies e a
+    recuperação de senha.
+- Nenhuma chamada ao backend depende de cookies entre origens (os cookies de sessão são só deste
+  domínio) — tudo via Bearer token, que
   atravessa origens sem problema (diferente de cookies, que exigiriam configuração extra de
   `SameSite`/domínio e ainda assim são frágeis entre dois domínios distintos).
 
@@ -45,9 +62,8 @@ ver `docs/DOCUMENTATION.md` do backend).
 
 ## 4. Stack
 
-Next.js 15 (App Router) · React 19 · TypeScript 5 (strict) · Tailwind CSS 3 · `@supabase/ssr` +
-`@supabase/supabase-js` (somente para sessão de autenticação) · Zod (validação de formulários) ·
-Lucide React (ícones).
+Next.js 15 (App Router) · React 19 · TypeScript 5 (strict) · Tailwind CSS 3 · Zod (validação de
+formulários) · Lucide React (ícones). Sem SDK do Supabase.
 
 ## 5. Estrutura de diretórios
 
@@ -58,10 +74,10 @@ src/
                       /termos, /cookies, /esqueci-senha, /redefinir-senha
     (protected)/app/  dashboard, perguntas, star, simulador, perfil, privacidade-dados
     (admin)/admin/    área administrativa (role "admin")
-    auth/callback/    troca de código do Supabase Auth por sessão
+    api/session/      login, logout, refresh — gravam/apagam os cookies de sessão
   components/         ui/ (primitivos), demais pastas por domínio
   lib/
-    supabase/         client.ts (browser), server.ts (Server Components, só sessão), middleware.ts
+    auth/tokens.ts    nomes/opções dos cookies de sessão, renovação via backend
     auth/session.ts   requireUser/requireAdmin — chamam o backend, não o banco
     api/              client.ts, server.ts, config.ts — helpers de chamada ao backend
     consent/          cookieConsent.ts
@@ -74,15 +90,16 @@ src/
 
 **Nota sobre `src/types/database.ts`:** existe idêntico nos dois projetos, porque este frontend
 precisa dos tipos para tipar a UI mas não deve importar nenhum código do backend. Ao gerar tipos
-reais do Supabase, gere nos dois projetos e mantenha-os sincronizados manualmente.
+reais do Supabase (no backend), copie para cá e mantenha-os sincronizados manualmente.
 
-## 6. Autenticação (inalterado em espírito, só a origem dos dados mudou)
+## 6. Fluxo de acesso
 
 Sem cadastro público — a venda é direta, com checkout em `/comprar` e pagamento via Mercado Pago
 (processado pelo backend). O acesso é criado pelo webhook do backend via
-`supabase.auth.admin.inviteUserByEmail`. Login por e-mail/senha (`/login`), recuperação de senha
-com mensagem genérica (`/esqueci-senha`), e definição de nova senha via link de uso único do
-Supabase Auth (`/redefinir-senha`). Autorização checada em duas camadas: middleware (chamando o
+`supabase.auth.admin.inviteUserByEmail`, com o link do convite levando a `/redefinir-senha`
+(onde o comprador define a senha). Login por e-mail/senha (`/login`), recuperação de senha
+com mensagem genérica (`/esqueci-senha`), e definição de nova senha via link de uso único
+(`/redefinir-senha`) — tudo executado pelo backend (seção 2). Autorização checada em duas camadas: middleware (chamando o
 backend) + Server Component (idem) — nunca por campo enviado pelo cliente.
 
 ## 7. Variáveis de ambiente
@@ -91,11 +108,11 @@ Ver `.env.example`. Nenhum valor real está commitado.
 
 | Variável | Efeito se ausente |
 |---|---|
-| `NEXT_PUBLIC_API_URL` | Toda chamada ao backend falha (erro explícito, "NEXT_PUBLIC_API_URL não configurado"). |
-| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Login/sessão não funcionam. |
+| `NEXT_PUBLIC_API_URL` | Toda chamada ao backend falha (erro explícito, "NEXT_PUBLIC_API_URL não configurado"), incluindo login. |
 | `NEXT_PUBLIC_GA_ID` / `NEXT_PUBLIC_GTM_ID` / `NEXT_PUBLIC_META_PIXEL_ID` | Nenhum script de analytics/marketing carrega, independentemente do consentimento. |
 
-Note o que **não** está aqui: `SUPABASE_SERVICE_ROLE_KEY`, `MERCADOPAGO_*`,
+Note o que **não** está aqui: qualquer variável do Supabase (`NEXT_PUBLIC_SUPABASE_*`,
+`SUPABASE_SERVICE_ROLE_KEY`), `MERCADOPAGO_*`,
 `CHECKOUT_PRODUCT_PRICE_BRL`, chaves de IA/transcrição — nenhuma dessas variáveis deve existir
 neste projeto. Elas vivem somente no backend.
 
@@ -128,7 +145,9 @@ este frontend e `api.` para o backend).
 
 ## 11. Pendências que dependem de credenciais/decisão humana
 
-- **Supabase**: nenhum projeto real foi criado neste ambiente (sem acesso de rede).
+- **Supabase**: nenhum projeto real foi criado neste ambiente (sem acesso de rede). Ao criar,
+  inclua `<FRONTEND_ORIGIN>/redefinir-senha` em Authentication → URL Configuration → Redirect
+  URLs (links de recuperação e convite apontam para lá).
 - **Backend**: este frontend depende do `carreirapro-backend` estar rodando e acessível em
   `NEXT_PUBLIC_API_URL` — sem isso, toda tela que precisa de dados (dashboard, perguntas,
   simulador, STAR, perfil, admin) mostra erro.
