@@ -13,5 +13,3 @@ coverage
 Dockerfile
 .dockerignore
 docs
-pnpm-lock.yaml
-pnpm-workspace.yaml

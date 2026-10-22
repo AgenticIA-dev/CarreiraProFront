@@ -16,7 +16,8 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN pnpm build
+# The project has no public/ folder; create it so the runner COPY below works.
+RUN mkdir -p public && pnpm build
 
 # Minimal runtime image
 FROM node:24-alpine AS runner
