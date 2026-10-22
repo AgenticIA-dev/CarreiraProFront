@@ -10,6 +10,10 @@ import type { NextConfig } from "next";
  */
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Gera `.next/standalone` (servidor mínimo + só as dependências usadas),
+  // usado pela imagem Docker. `next dev` continua igual; `next start` ainda
+  // funciona, mas exibe um aviso.
+  output: "standalone",
   poweredByHeader: false,
   eslint: {
     ignoreDuringBuilds: false,
