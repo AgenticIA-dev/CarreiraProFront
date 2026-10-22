@@ -1,65 +1,37 @@
 # syntax=docker/dockerfile:1
-#
-# CarreiraPro — frontend (Next.js, saída "standalone").
-#
-# As variáveis NEXT_PUBLIC_* são gravadas no código durante o build, por isso
-# entram como --build-arg (e não em tempo de execução). Mudou alguma? Gere a
-# imagem de novo.
-#
-#   docker build -t carreirapro-frontend \
-#     --build-arg NEXT_PUBLIC_API_URL=https://api.seudominio.com.br \
-#     --build-arg NEXT_PUBLIC_APP_URL=https://app.seudominio.com.br \
-#     .
-#   docker run -p 3000:3000 carreirapro-frontend
 
-ARG NODE_VERSION=22
-
-# --- Dependências -----------------------------------------------------------------
-FROM node:${NODE_VERSION}-alpine AS deps
-WORKDIR /app
-# Next usa o binário SWC compilado para musl no Alpine; libc6-compat cobre
-# dependências nativas que esperam glibc.
-RUN apk add --no-cache libc6-compat
-COPY package.json package-lock.json ./
-RUN npm ci
-
-# --- Build ------------------------------------------------------------------------
-FROM node:${NODE_VERSION}-alpine AS build
+FROM node:24-alpine AS base
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN corepack enable
 WORKDIR /app
 
-ARG NEXT_PUBLIC_API_URL=http://localhost:3001
-ARG NEXT_PUBLIC_APP_URL=http://localhost:3000
-ARG NEXT_PUBLIC_GA_ID=
-ARG NEXT_PUBLIC_GTM_ID=
-ARG NEXT_PUBLIC_META_PIXEL_ID=
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL} \
-    NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL} \
-    NEXT_PUBLIC_GA_ID=${NEXT_PUBLIC_GA_ID} \
-    NEXT_PUBLIC_GTM_ID=${NEXT_PUBLIC_GTM_ID} \
-    NEXT_PUBLIC_META_PIXEL_ID=${NEXT_PUBLIC_META_PIXEL_ID} \
-    NEXT_TELEMETRY_DISABLED=1
+# Install dependencies (cached unless the manifest or lockfile change)
+FROM base AS deps
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
+# Build the standalone Next.js server
+FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# Garante que a pasta exista (o projeto pode não ter arquivos estáticos).
-RUN mkdir -p public && npm run build
+RUN pnpm build
 
-# --- Runtime ----------------------------------------------------------------------
-FROM node:${NODE_VERSION}-alpine AS runtime
+# Minimal runtime image
+FROM node:24-alpine AS runner
 WORKDIR /app
-ENV NODE_ENV=production \
-    NEXT_TELEMETRY_DISABLED=1 \
-    HOSTNAME=0.0.0.0 \
-    PORT=3000
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 
-COPY --from=build --chown=node:node /app/public ./public
-COPY --from=build --chown=node:node /app/.next/standalone ./
-COPY --from=build --chown=node:node /app/.next/static ./.next/static
+RUN addgroup -S -g 1001 nodejs && adduser -S -u 1001 -G nodejs nextjs
 
-USER node
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
 EXPOSE 3000
-
-HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-  CMD wget -qO- "http://127.0.0.1:${PORT}/" > /dev/null || exit 1
-
 CMD ["node", "server.js"]
