@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
-import { ChevronDown, Star } from "lucide-react";
+import { ChevronDown, Mic, Star } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
 import type { QuestionRow } from "@/types/database";
@@ -13,6 +14,7 @@ const categoryLabels: Record<string, string> = {
   situacional: "Situacional",
   fit_cultural: "Fit cultural",
   lideranca: "Liderança",
+  aumento_promocao: "Aumento e promoção",
 };
 
 const difficultyLabels: Record<string, string> = {
@@ -111,6 +113,15 @@ export function QuestionCard({
                 ))}
               </ul>
             </div>
+          )}
+          {!question.id.startsWith("seed-") && (
+            <Link
+              href={`/app/simulador?pergunta=${question.id}`}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
+            >
+              <Mic className="h-4 w-4" aria-hidden="true" />
+              Treinar no simulador
+            </Link>
           )}
         </div>
       )}

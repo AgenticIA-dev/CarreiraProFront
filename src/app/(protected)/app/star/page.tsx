@@ -8,8 +8,10 @@ export default function StarPage() {
     <div className="mx-auto max-w-2xl">
       <h1 className="text-2xl font-semibold text-ink-900">Método STAR</h1>
       <p className="mt-1 text-sm text-ink-500">
-        Organize uma experiência real em Situação, Tarefa, Ação e Resultado. Preencha apenas com
-        fatos — se faltar alguma informação, deixe o campo em branco e nós avisaremos.
+        Transforme uma experiência real em uma resposta de entrevista no padrão sênior: versão
+        completa e curta, checklist de senioridade e as perguntas que o entrevistador vai fazer.
+        Use apenas fatos — onde faltar um dado, a resposta mostra uma lacuna [entre colchetes] para
+        você completar.
       </p>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-4">

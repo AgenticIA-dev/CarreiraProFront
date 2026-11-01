@@ -4,7 +4,7 @@ import { CheckCircle2, ClipboardList, Mic, Target } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 
 export const metadata: Metadata = {
-  title: "CarreiraPro — Chegue mais preparado para sua próxima entrevista",
+  title: "VoceUP — Chegue mais preparado para sua próxima entrevista",
   description:
     "Pratique perguntas de entrevista, organize suas experiências pelo método STAR e treine respostas com feedback. Preparação real, sem promessas de emprego garantido.",
 };
@@ -71,7 +71,7 @@ export default function LandingPage() {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
               <CheckCircle2 className="h-8 w-8 shrink-0 text-brand-400" aria-hidden="true" />
               <div>
-                <h2 className="text-lg font-semibold">O que o CarreiraPro é — e o que não é</h2>
+                <h2 className="text-lg font-semibold">O que o VoceUP é — e o que não é</h2>
                 <p className="mt-1.5 text-sm text-ink-200">
                   Somos uma ferramenta de treinamento e preparação. Não somos empregador, agência
                   de recrutamento ou banco de vagas, e não prometemos contratação, aprovação em

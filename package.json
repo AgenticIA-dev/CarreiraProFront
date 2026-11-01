@@ -1,10 +1,10 @@
 {
-  "name": "carreirapro-frontend",
+  "name": "voceup-frontend",
   "version": "0.1.0",
   "private": true,
-  "description": "CarreiraPro — frontend (UI). Toda a lógica de negócio, autenticação, pagamentos e integrações vive no projeto carreirapro-backend, chamado via NEXT_PUBLIC_API_URL.",
+  "description": "VoceUP — frontend (UI). Toda a lógica de negócio, autenticação, pagamentos e integrações vive no projeto voceup-backend, chamado via NEXT_PUBLIC_API_URL.",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",

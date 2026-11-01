@@ -3,7 +3,7 @@ import { ACCESS_COOKIE } from "@/lib/auth/tokens";
 import { getApiBaseUrl } from "./config";
 
 /**
- * fetch autenticado para o backend do CarreiraPro, a partir de Server
+ * fetch autenticado para o backend do VoceUP, a partir de Server
  * Components / Route Handlers deste frontend (ex.: dashboard, admin).
  * Pega o access token da sessão (cookie `cp_access`) e o envia como
  * `Authorization: Bearer` — o backend é quem efetivamente valida esse

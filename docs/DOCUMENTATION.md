@@ -1,6 +1,6 @@
-# CarreiraPro — Frontend (UI)
+# VoceUP — Frontend (UI)
 
-> Este é o projeto **frontend** do CarreiraPro, separado do backend a pedido do usuário
+> Este é o projeto **frontend** do VoceUP, separado do backend a pedido do usuário
 > (15/10/2026). Antes, frontend e backend eram um único projeto Next.js; agora são dois deploys
 > independentes que se comunicam por HTTP. Este documento descreve só o frontend — o backend tem
 > seu próprio `docs/DOCUMENTATION.md`, com a lista completa de rotas de API.
@@ -11,7 +11,7 @@ Um projeto Next.js 15 (App Router) com **todas as páginas** (públicas, área d
 Ele **não acessa o banco de dados**: não lê tabelas e não tem nenhuma credencial do banco. Tanto
 a autenticação (login, logout, renovação de sessão, recuperação
 de senha) quanto toda leitura/escrita de dados de negócio (perguntas, respostas STAR, sessões de
-entrevista, perfil, conta, admin, pagamento) são feitas pelo projeto `carreirapro-backend`,
+entrevista, perfil, conta, admin, pagamento) são feitas pelo projeto `voceup-backend`,
 chamado por HTTP.
 
 ## 2. Autenticação (feita pelo backend)
@@ -132,7 +132,7 @@ projeto não tem suíte de testes própria neste momento.
 
 ## 10. Deploy
 
-1. Fazer o deploy do backend primeiro (`carreirapro-backend`) e anotar sua URL pública.
+1. Fazer o deploy do backend primeiro (`voceup-backend`) e anotar sua URL pública.
 2. Preencher `.env.example` deste frontend, com `NEXT_PUBLIC_API_URL` apontando para essa URL.
 3. `npm ci && npm run build && npm start` no servidor (porta 3000 por padrão), mantido por PM2
    e atrás do Nginx com HTTPS — projeto separado do backend, com sua própria URL. As variáveis
@@ -146,7 +146,7 @@ projetos e o PostgreSQL — incluindo como apontar os subdomínios (ex.: `app.` 
 
 ## 11. Pendências que dependem de credenciais/decisão humana
 
-- **Backend**: este frontend depende do `carreirapro-backend` estar rodando e acessível em
+- **Backend**: este frontend depende do `voceup-backend` estar rodando e acessível em
   `NEXT_PUBLIC_API_URL` — sem isso, toda tela que precisa de dados (dashboard, perguntas,
   simulador, STAR, perfil, admin) mostra erro.
 - **Analytics/Ads**: arquitetura pronta (carrega só com consentimento), nenhuma conta real

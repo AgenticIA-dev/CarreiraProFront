@@ -5,7 +5,7 @@ export function PublicHeader() {
     <header className="border-b border-ink-100">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link href="/" className="text-lg font-semibold tracking-tight text-ink-900">
-          Carreira<span className="text-brand-600">Pro</span>
+          Voce<span className="text-brand-600">UP</span>
         </Link>
         <nav className="flex items-center gap-2">
           <Link

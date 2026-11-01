@@ -11,25 +11,25 @@ const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
   title: {
-    default: "CarreiraPro — Prepare-se melhor para suas entrevistas",
-    template: "%s · CarreiraPro",
+    default: "VoceUP — Prepare-se melhor para suas entrevistas",
+    template: "%s · VoceUP",
   },
   description:
     "Pratique perguntas de entrevista, organize suas experiências pelo método STAR e treine respostas com feedback estruturado. Preparação, prática e evolução — sem promessas de emprego garantido.",
-  applicationName: "CarreiraPro",
+  applicationName: "VoceUP",
   robots: { index: true, follow: true },
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    siteName: "CarreiraPro",
-    title: "CarreiraPro — Prepare-se melhor para suas entrevistas",
+    siteName: "VoceUP",
+    title: "VoceUP — Prepare-se melhor para suas entrevistas",
     description:
       "Pratique perguntas, organize respostas pelo método STAR e treine entrevistas com feedback estruturado.",
     url: appUrl,
   },
   twitter: {
     card: "summary_large_image",
-    title: "CarreiraPro — Prepare-se melhor para suas entrevistas",
+    title: "VoceUP — Prepare-se melhor para suas entrevistas",
     description:
       "Pratique perguntas, organize respostas pelo método STAR e treine entrevistas com feedback estruturado.",
   },

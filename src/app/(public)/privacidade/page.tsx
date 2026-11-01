@@ -1,113 +1,202 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { company, LEGAL_VERSION_LABEL, orPending } from "@/lib/legal/company";
 
 export const metadata: Metadata = {
   title: "Política de Privacidade",
-  description: "Como o CarreiraPro coleta, usa e protege seus dados pessoais.",
+  description: "Como o VoceUP coleta, usa, compartilha e protege seus dados pessoais.",
 };
 
+function Section({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
+  return (
+    <section>
+      <h2 className="text-lg font-semibold text-ink-900">
+        {n}. {title}
+      </h2>
+      <div className="mt-2 space-y-2">{children}</div>
+    </section>
+  );
+}
+
 export default function PrivacidadePage() {
+  const privacyEmail = orPending(company.privacyEmail);
   return (
     <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
       <h1 className="text-2xl font-semibold text-ink-900 sm:text-3xl">Política de Privacidade</h1>
-      <p className="mt-2 text-sm text-ink-500">Última atualização: 14 de setembro de 2026.</p>
+      <p className="mt-2 text-sm text-ink-500">Vigente a partir de {LEGAL_VERSION_LABEL}.</p>
 
-      <div className="prose-cp mt-8 space-y-8 text-sm leading-relaxed text-ink-700">
-        <section>
-          <h2 className="text-lg font-semibold text-ink-900">1. Quem somos</h2>
-          <p className="mt-2">
-            O CarreiraPro é uma ferramenta de treinamento e preparação para entrevistas de
-            emprego. Esta política explica como tratamos os dados pessoais dos usuários da
-            plataforma, em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018 —
-            LGPD).
+      <div className="mt-8 space-y-8 text-sm leading-relaxed text-ink-700">
+        <Section n={1} title="Quem é o responsável pelos seus dados">
+          <p>
+            O controlador dos dados pessoais tratados no VoceUP ({company.site}) é{" "}
+            <strong>{orPending(company.legalName)}</strong>, CNPJ/CPF {orPending(company.document)}, com
+            endereço em {orPending(company.address)}. Esta política segue a Lei Geral de Proteção de Dados
+            (Lei nº 13.709/2018 — LGPD).
           </p>
-        </section>
+          <p>
+            Canal do titular e encarregado pelo tratamento de dados
+            {company.dpoName ? `: ${company.dpoName}` : ""} — {privacyEmail}.
+          </p>
+        </Section>
 
-        <section>
-          <h2 className="text-lg font-semibold text-ink-900">2. Quais dados coletamos</h2>
-          <p className="mt-2">Coletamos apenas o necessário para prestar o serviço:</p>
-          <ul className="mt-2 list-disc space-y-1 pl-5">
-            <li>Dados de cadastro: nome e e-mail, recebidos no momento da compra do produto.</li>
-            <li>Dados de uso: perguntas praticadas, respostas estruturadas pelo método STAR,
-              transcrições e pontuações de sessões do simulador de entrevista.</li>
-            <li>Dados técnicos: endereço IP, tipo de dispositivo e navegador, para fins de
-              segurança e funcionamento do serviço.</li>
-            <li>Dados de consentimento de cookies e preferências de analytics/marketing, quando
-              aplicável.</li>
+        <Section n={2} title="Quais dados tratamos">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <strong>Cadastro e compra:</strong> e-mail, nome (se você informar), senha (guardada apenas como
+              hash criptográfico — nem nós conseguimos lê-la) e dados da compra recebidos do Mercado Pago (id e
+              status do pagamento, valor, data e nome/e-mail do pagador). Não recebemos nem guardamos dados do
+              seu cartão.
+            </li>
+            <li>
+              <strong>Uso da plataforma:</strong> perguntas favoritas, respostas que você escreve no gerador
+              STAR, transcrições, notas e análises das suas simulações.
+            </li>
+            <li>
+              <strong>Áudio do simulador:</strong> a gravação é enviada ao nosso servidor apenas para ser
+              transcrita e <strong>não é armazenada</strong> por nós; guardamos somente o texto da transcrição.
+            </li>
+            <li>
+              <strong>Dados técnicos:</strong> endereço IP, navegador e registros de acesso, usados para
+              segurança (por exemplo, limitar tentativas de login) e para cumprir o Marco Civil da Internet.
+            </li>
+            <li>
+              <strong>Preferências de cookies:</strong> sua escolha de consentimento (aceitar, rejeitar ou
+              personalizar) e a data da decisão.
+            </li>
           </ul>
-        </section>
-
-        <section>
-          <h2 className="text-lg font-semibold text-ink-900">3. Finalidade do tratamento</h2>
-          <p className="mt-2">
-            Usamos seus dados exclusivamente para: viabilizar seu acesso à plataforma, entregar as
-            funcionalidades de preparação para entrevistas, gerar feedback de treinamento, cumprir
-            obrigações legais e, com o seu consentimento, medir o desempenho de campanhas de
-            marketing.
+          <p>
+            Não pedimos dados pessoais sensíveis. Evite incluir nas suas respostas informações sensíveis suas
+            ou de outras pessoas (saúde, religião, dados de colegas etc.).
           </p>
-        </section>
+        </Section>
 
-        <section>
-          <h2 className="text-lg font-semibold text-ink-900">4. Base legal</h2>
-          <p className="mt-2">
-            Tratamos seus dados com base na execução do contrato (prestação do serviço
-            contratado), no cumprimento de obrigação legal ou regulatória, e, quando aplicável, no
-            seu consentimento (por exemplo, para cookies de analytics e marketing).
+        <Section n={3} title="Para que usamos e com qual base legal">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <strong>Prestar o serviço contratado</strong> — criar sua conta, liberar o acesso após o pagamento,
+              gerar respostas STAR, transcrever e analisar suas simulações, dar suporte (execução de contrato,
+              art. 7º, V).
+            </li>
+            <li>
+              <strong>Cumprir obrigações legais</strong> — fiscais, de defesa do consumidor e guarda de
+              registros de acesso (art. 7º, II).
+            </li>
+            <li>
+              <strong>Segurança e prevenção a fraudes</strong> — proteger contas e evitar abuso (legítimo
+              interesse, art. 7º, IX).
+            </li>
+            <li>
+              <strong>Medição e marketing</strong> — somente com o seu consentimento nos cookies, que pode ser
+              revogado a qualquer momento em{" "}
+              <Link href="/cookies" className="text-brand-600 underline">
+                Cookies
+              </Link>{" "}
+              (art. 7º, I).
+            </li>
+          </ul>
+          <p>Não vendemos dados pessoais e não usamos suas respostas para fins de marketing.</p>
+        </Section>
+
+        <Section n={4} title="Com quem compartilhamos">
+          <p>Somente com fornecedores necessários para operar o serviço, que tratam os dados em nosso nome:</p>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <strong>Mercado Pago</strong> — processamento do pagamento.
+            </li>
+            <li>
+              <strong>Hospedagem e banco de dados</strong> — servidores onde a plataforma funciona.
+            </li>
+            <li>
+              <strong>Provedor de e-mail</strong> — envio do convite de acesso e da redefinição de senha.
+            </li>
+            <li>
+              <strong>OpenAI</strong> (quando a análise por inteligência artificial está ativa) — recebe o áudio
+              para transcrição e o texto das suas respostas para gerar a análise. Não enviamos seu nome ou e-mail
+              junto.
+            </li>
+            <li>
+              <strong>Ferramentas de analytics/marketing</strong> (ex.: Google, Meta) — apenas se você
+              consentir nos cookies.
+            </li>
+          </ul>
+          <p>
+            <strong>Reconhecimento de voz do navegador:</strong> no simulador, se o seu navegador oferecer
+            transcrição ao vivo (como Chrome, Edge ou Safari), o áudio também pode ser processado pela empresa
+            responsável pelo navegador (Google, Microsoft ou Apple), conforme a política de privacidade dela.
+            Se preferir, responda digitando.
           </p>
-        </section>
-
-        <section>
-          <h2 className="text-lg font-semibold text-ink-900">5. Com quem compartilhamos dados</h2>
-          <p className="mt-2">
-            Podemos compartilhar dados estritamente necessários com prestadores de serviço que nos
-            ajudam a operar a plataforma: processamento de pagamento (Mercado Pago), hospedagem e banco
-            de dados, e, quando configurados, provedores de transcrição de áudio e de
-            inteligência artificial usados para gerar feedback de treinamento. Não vendemos dados
-            pessoais.
+          <p>
+            Também podemos compartilhar dados quando exigido por lei ou por ordem de autoridade competente.
           </p>
-        </section>
+        </Section>
 
-        <section>
-          <h2 className="text-lg font-semibold text-ink-900">6. Retenção e eliminação</h2>
-          <p className="mt-2">
-            Mantemos seus dados pelo tempo necessário para cumprir as finalidades descritas nesta
-            política ou obrigações legais/regulatórias/de auditoria aplicáveis. Não eliminamos
-            dados automaticamente sem antes considerar tais obrigações.
+        <Section n={5} title="Transferência internacional">
+          <p>
+            Alguns fornecedores (como a OpenAI e, conforme a configuração, a hospedagem ou o e-mail) podem
+            processar dados fora do Brasil, especialmente nos Estados Unidos. Nesses casos, a transferência
+            ocorre para a execução do contrato com você e com as garantias contratuais previstas no art. 33 da
+            LGPD e na regulamentação da ANPD.
           </p>
-        </section>
+        </Section>
 
-        <section>
-          <h2 className="text-lg font-semibold text-ink-900">7. Seus direitos</h2>
-          <p className="mt-2">
-            Nos termos da LGPD, você pode solicitar acesso, correção, eliminação (nas hipóteses
-            aplicáveis), portabilidade, informação sobre compartilhamento e revogação do
-            consentimento. Você pode exercer esses direitos na área{" "}
-            <span className="font-medium">Privacidade e meus dados</span>, dentro do seu perfil, ou
-            pelo contato abaixo.
+        <Section n={6} title="Por quanto tempo guardamos">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <strong>Dados de conta e de uso:</strong> enquanto o seu acesso estiver ativo. Após o fim do
+              acesso, por até 12 meses (para permitir uma renovação sem perda do histórico), salvo pedido de
+              exclusão antes disso.
+            </li>
+            <li>
+              <strong>Pedido de exclusão:</strong> eliminamos os dados de uso em até 30 dias, mantendo apenas o
+              que a lei obriga a guardar.
+            </li>
+            <li>
+              <strong>Dados de compra e fiscais:</strong> pelo prazo exigido pela legislação fiscal e de defesa
+              do consumidor (em geral, 5 anos).
+            </li>
+            <li>
+              <strong>Registros de acesso:</strong> 6 meses, como exige o Marco Civil da Internet (Lei nº
+              12.965/2014).
+            </li>
+            <li>
+              <strong>Registro de consentimento de cookies:</strong> pelo tempo necessário para comprovar a sua
+              escolha.
+            </li>
+          </ul>
+        </Section>
+
+        <Section n={7} title="Seus direitos">
+          <p>
+            Você pode pedir confirmação e acesso aos seus dados, correção, anonimização, bloqueio ou eliminação,
+            portabilidade, informação sobre compartilhamentos e revogação do consentimento (art. 18 da LGPD). Faça
+            o pedido em{" "}
+            <Link href="/app/privacidade-dados" className="text-brand-600 underline">
+              Privacidade e meus dados
+            </Link>
+            , dentro da sua conta, ou pelo e-mail {privacyEmail}. Respondemos em até 15 dias. Você também pode
+            apresentar reclamação à Autoridade Nacional de Proteção de Dados (ANPD).
           </p>
-        </section>
+        </Section>
 
-        <section>
-          <h2 className="text-lg font-semibold text-ink-900">8. Segurança</h2>
-          <p className="mt-2">
-            Adotamos medidas técnicas e organizacionais para proteger seus dados, incluindo
-            controle de acesso, criptografia em trânsito, segregação de segredos em variáveis de
-            ambiente e políticas de acesso restrito ao banco de dados.
+        <Section n={8} title="Segurança">
+          <p>
+            Usamos conexão criptografada (HTTPS), senhas armazenadas com hash, controle de acesso por usuário,
+            segredos guardados fora do código e acesso restrito ao banco de dados. Nenhum sistema é 100% imune;
+            se ocorrer um incidente de segurança que possa causar risco relevante a você, avisaremos você e a
+            ANPD, como exige a lei.
           </p>
-        </section>
+        </Section>
 
-        <section>
-          <h2 className="text-lg font-semibold text-ink-900">9. Contato</h2>
-          <p className="mt-2">
-            Dúvidas sobre esta política ou solicitações relacionadas aos seus dados podem ser
-            enviadas ao responsável pelo tratamento de dados do CarreiraPro através do e-mail de
-            suporte informado na plataforma.
+        <Section n={9} title="Menores de idade">
+          <p>O VoceUP é destinado a maiores de 18 anos e não coleta intencionalmente dados de menores.</p>
+        </Section>
+
+        <Section n={10} title="Alterações">
+          <p>
+            Podemos atualizar esta política. A data de vigência fica no topo da página e mudanças relevantes
+            serão avisadas na plataforma ou por e-mail.
           </p>
-        </section>
-
-        <p className="text-xs text-ink-400">
-          Este texto descreve o funcionamento real da plataforma e pode ser refinado juridicamente
-          antes da publicação em produção.
-        </p>
+        </Section>
       </div>
     </article>
   );

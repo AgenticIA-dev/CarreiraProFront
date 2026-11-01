@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { apiFetchServer } from "@/lib/api/server";
 import type { UserRow } from "@/types/database";
@@ -11,7 +12,12 @@ import type { UserRow } from "@/types/database";
  * Quem valida a sessão e lê `public.users` é o backend
  * (`GET /api/account/me`), chamado aqui com o token da sessão atual.
  */
-export async function requireUser(): Promise<{ authId: string; email: string; profile: UserRow }> {
+/**
+ * Memoizado por requisição (React `cache`): layout + página chamam
+ * requireUser() na mesma renderização, mas o backend só é consultado UMA vez.
+ * Antes, cada navegação fazia 2–3 chamadas idênticas a /api/account/me.
+ */
+export const requireUser = cache(async (): Promise<{ authId: string; email: string; profile: UserRow }> => {
   const response = await apiFetchServer("/api/account/me");
 
   if (!response.ok) {
@@ -25,7 +31,7 @@ export async function requireUser(): Promise<{ authId: string; email: string; pr
   }
 
   return { authId: profile.id, email: email ?? profile.email, profile };
-}
+});
 
 /**
  * Igual a requireUser(), mas também exige role "admin". Nunca decide isso

@@ -1,11 +1,11 @@
-# CarreiraPro — Frontend
+# VoceUP — Frontend
 
 Web App/SaaS de preparação e treinamento para entrevistas de emprego: banco de perguntas, gerador
 de respostas pelo método STAR e simulador de entrevista com feedback estruturado. Este projeto
 serve a interface (páginas públicas, área do usuário, admin) e a autenticação — toda a lógica de
-negócio é chamada do projeto **`carreirapro-backend`** por HTTP.
+negócio é chamada do projeto **`voceup-backend`** por HTTP.
 
-> O CarreiraPro é uma ferramenta de treinamento e preparação profissional. Os resultados obtidos
+> O VoceUP é uma ferramenta de treinamento e preparação profissional. Os resultados obtidos
 > variam de acordo com o perfil, experiência, preparação e contexto de cada usuário. O uso da
 > plataforma não garante aprovação em processos seletivos, contratação, aumento salarial ou
 > qualquer resultado profissional específico.

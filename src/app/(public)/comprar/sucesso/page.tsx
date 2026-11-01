@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/Card";
 
 export const metadata: Metadata = {
   title: "Pagamento aprovado",
-  description: "Pagamento aprovado no CarreiraPro.",
+  description: "Pagamento aprovado no VoceUP.",
 };
 
 /**
@@ -22,7 +22,7 @@ export default function CompraSucessoPage() {
         <h1 className="text-xl font-semibold text-ink-900">Pagamento aprovado!</h1>
         <p className="mt-2 text-sm text-ink-500">
           Em poucos minutos você receberá um e-mail de convite para criar sua senha e acessar o
-          CarreiraPro. Se não encontrar, verifique também a caixa de spam.
+          VoceUP. Se não encontrar, verifique também a caixa de spam.
         </p>
         <Link
           href="/login"

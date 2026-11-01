@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "CarreiraPro",
-    short_name: "CarreiraPro",
+    name: "VoceUP",
+    short_name: "VoceUP",
     description:
       "Pratique perguntas, organize respostas pelo método STAR e treine entrevistas com feedback.",
     start_url: "/app",

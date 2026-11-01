@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 /**
- * Design tokens do CarreiraPro.
+ * Design tokens do VoceUP.
  *
  * Paleta definida no prompt mestre:
  *  - #0F172A (slate-900) — base escura, texto principal, superfícies de destaque

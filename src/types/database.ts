@@ -35,7 +35,8 @@ export type QuestionCategory =
   | "tecnica"
   | "situacional"
   | "fit_cultural"
-  | "lideranca";
+  | "lideranca"
+  | "aumento_promocao";
 
 export type QuestionDifficulty = "iniciante" | "intermediaria" | "avancada";
 

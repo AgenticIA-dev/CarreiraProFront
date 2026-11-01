@@ -33,14 +33,15 @@ export function CookieConsentBanner() {
 
   if (!visible) return null;
 
+  // Fecha o banner PRIMEIRO; a gravação vem depois e nunca impede o fechamento.
   const handleAcceptAll = () => {
-    acceptAll();
     setVisible(false);
+    acceptAll();
   };
 
   const handleReject = () => {
-    rejectNonEssential();
     setVisible(false);
+    rejectNonEssential();
   };
 
   const handleSaveCustom = () => {
@@ -48,8 +49,8 @@ export function CookieConsentBanner() {
       analytics: analyticsChecked,
       marketing: marketingChecked,
     };
-    saveConsent(prefs);
     setVisible(false);
+    saveConsent(prefs);
   };
 
   return (
@@ -61,7 +62,7 @@ export function CookieConsentBanner() {
     >
       <div className="mx-auto max-w-4xl">
         <p className="text-sm text-ink-700">
-          Usamos cookies necessários para o funcionamento do CarreiraPro. Com sua permissão,
+          Usamos cookies necessários para o funcionamento do VoceUP. Com sua permissão,
           também usamos cookies de análise e, quando aplicável, de marketing, para entender o uso
           do produto. Você pode aceitar, rejeitar ou personalizar — e mudar de ideia depois em{" "}
           <a href="/cookies" className="font-medium text-brand-600 underline underline-offset-2">
@@ -107,18 +108,18 @@ export function CookieConsentBanner() {
         )}
 
         <div className="mt-4 flex flex-wrap gap-2">
-          <Button size="sm" onClick={handleAcceptAll}>
+          <Button type="button" size="sm" onClick={handleAcceptAll}>
             Aceitar tudo
           </Button>
-          <Button size="sm" variant="secondary" onClick={handleReject}>
+          <Button type="button" size="sm" variant="secondary" onClick={handleReject}>
             Rejeitar não essenciais
           </Button>
           {showDetails ? (
-            <Button size="sm" variant="ghost" onClick={handleSaveCustom}>
+            <Button type="button" size="sm" variant="ghost" onClick={handleSaveCustom}>
               Salvar preferências
             </Button>
           ) : (
-            <Button size="sm" variant="ghost" onClick={() => setShowDetails(true)}>
+            <Button type="button" size="sm" variant="ghost" onClick={() => setShowDetails(true)}>
               Personalizar
             </Button>
           )}

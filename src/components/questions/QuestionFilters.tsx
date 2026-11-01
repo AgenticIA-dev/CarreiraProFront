@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Briefcase, Search, TrendingUp } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +14,23 @@ const categories = [
   { value: "lideranca", label: "Liderança" },
 ];
 
+export type QuestionMode = "entrevista" | "aumento_promocao";
+
+const modes: { value: QuestionMode; label: string; desc: string; icon: typeof Briefcase }[] = [
+  {
+    value: "entrevista",
+    label: "Entrevista de emprego",
+    desc: "Perguntas de processo seletivo, por competência.",
+    icon: Briefcase,
+  },
+  {
+    value: "aumento_promocao",
+    label: "Aumento e promoção",
+    desc: "Para quem já está empregado e quer se preparar para a conversa.",
+    icon: TrendingUp,
+  },
+];
+
 const difficulties = [
   { value: "", label: "Todas" },
   { value: "iniciante", label: "Iniciante" },
@@ -22,6 +39,8 @@ const difficulties = [
 ];
 
 export function QuestionFilters({
+  mode,
+  onModeChange,
   search,
   onSearchChange,
   category,
@@ -31,6 +50,8 @@ export function QuestionFilters({
   favoritesOnly,
   onFavoritesOnlyChange,
 }: {
+  mode: QuestionMode;
+  onModeChange: (value: QuestionMode) => void;
   search: string;
   onSearchChange: (value: string) => void;
   category: string;
@@ -42,6 +63,28 @@ export function QuestionFilters({
 }) {
   return (
     <div className="space-y-3">
+      <div className="grid gap-2 sm:grid-cols-2" role="tablist" aria-label="Tipo de preparação">
+        {modes.map((m) => (
+          <button
+            key={m.value}
+            type="button"
+            role="tab"
+            aria-selected={mode === m.value}
+            onClick={() => onModeChange(m.value)}
+            className={cn(
+              "flex items-start gap-3 rounded-xl border p-3 text-left transition-colors",
+              mode === m.value ? "border-brand-600 bg-brand-50" : "border-ink-200 bg-white hover:border-brand-300"
+            )}
+          >
+            <m.icon className="mt-0.5 h-5 w-5 shrink-0 text-brand-600" aria-hidden="true" />
+            <span>
+              <span className="block text-sm font-semibold text-ink-900">{m.label}</span>
+              <span className="block text-xs text-ink-500">{m.desc}</span>
+            </span>
+          </button>
+        ))}
+      </div>
+
       <div className="relative">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
         <Input
@@ -53,13 +96,15 @@ export function QuestionFilters({
         />
       </div>
 
-      <div className="flex flex-wrap gap-2 overflow-x-auto pb-1">
-        {categories.map((c) => (
-          <FilterChip key={c.value} active={category === c.value} onClick={() => onCategoryChange(c.value)}>
-            {c.label}
-          </FilterChip>
-        ))}
-      </div>
+      {mode === "entrevista" && (
+        <div className="flex flex-wrap gap-2 overflow-x-auto pb-1" aria-label="Competência">
+          {categories.map((c) => (
+            <FilterChip key={c.value} active={category === c.value} onClick={() => onCategoryChange(c.value)}>
+              {c.label}
+            </FilterChip>
+          ))}
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center gap-2">
         {difficulties.map((d) => (

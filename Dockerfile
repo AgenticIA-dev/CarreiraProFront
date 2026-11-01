@@ -14,6 +14,19 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 # Build the standalone Next.js server
 FROM base AS builder
+# Variáveis NEXT_PUBLIC_* são gravadas no bundle do navegador DURANTE o build.
+# O .env não entra na imagem (.dockerignore), então elas precisam vir como
+# build args:  docker build --build-arg NEXT_PUBLIC_API_URL=https://api.seudominio.com.br ...
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_APP_URL
+ARG NEXT_PUBLIC_GA_ID
+ARG NEXT_PUBLIC_GTM_ID
+ARG NEXT_PUBLIC_META_PIXEL_ID
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
+    NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL \
+    NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID \
+    NEXT_PUBLIC_GTM_ID=$NEXT_PUBLIC_GTM_ID \
+    NEXT_PUBLIC_META_PIXEL_ID=$NEXT_PUBLIC_META_PIXEL_ID
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 # The project has no public/ folder; create it so the runner COPY below works.

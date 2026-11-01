@@ -23,19 +23,45 @@ export interface ConsentPreferences {
 }
 
 const STORAGE_KEY = "cp_cookie_consent";
+const ANON_KEY = "cp_anon_id";
 export const CONSENT_CHANGED_EVENT = "cp:consent-changed";
 
 export function getStoredConsent(): ConsentPreferences | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw) as ConsentPreferences;
+    if (raw) return JSON.parse(raw) as ConsentPreferences;
   } catch {
-    return null;
+    // localStorage indisponível (aba anônima/bloqueio) — tenta o cookie.
+  }
+  try {
+    const entry = document.cookie.split("; ").find((c) => c.startsWith(`${STORAGE_KEY}=`));
+    if (entry) return JSON.parse(decodeURIComponent(entry.slice(STORAGE_KEY.length + 1))) as ConsentPreferences;
+  } catch {
+    // Cookie corrompido — trata como "sem decisão".
+  }
+  return null;
+}
+
+function getAnonymousId(): string {
+  try {
+    let id = window.localStorage.getItem(ANON_KEY);
+    if (!id) {
+      id = typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : String(Date.now());
+      window.localStorage.setItem(ANON_KEY, id);
+    }
+    return id;
+  } catch {
+    return "unknown";
   }
 }
 
+/**
+ * Persiste a decisão do usuário. NUNCA lança exceção: qualquer falha
+ * (localStorage bloqueado, NEXT_PUBLIC_API_URL ausente no build, backend
+ * fora do ar, CORS) é engolida — antes, uma exceção aqui impedia o banner
+ * de fechar ao clicar em "Aceitar".
+ */
 export function saveConsent(preferences: Omit<ConsentPreferences, "necessary" | "decidedAt">) {
   const value: ConsentPreferences = {
     necessary: true,
@@ -43,19 +69,40 @@ export function saveConsent(preferences: Omit<ConsentPreferences, "necessary" | 
     marketing: preferences.marketing,
     decidedAt: new Date().toISOString(),
   };
-  if (typeof window !== "undefined") {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
-    window.dispatchEvent(new CustomEvent(CONSENT_CHANGED_EVENT, { detail: value }));
+  if (typeof window === "undefined") return value;
+
+  const serialized = JSON.stringify(value);
+  try {
+    window.localStorage.setItem(STORAGE_KEY, serialized);
+  } catch {
+    // Ignora — o cookie abaixo garante a persistência.
   }
+  try {
+    // Cookie de 1ª parte (180 dias) como fallback e para leitura no servidor.
+    document.cookie = `${STORAGE_KEY}=${encodeURIComponent(serialized)}; Path=/; Max-Age=${60 * 60 * 24 * 180}; SameSite=Lax${
+      window.location.protocol === "https:" ? "; Secure" : ""
+    }`;
+  } catch {
+    // Ignora.
+  }
+  try {
+    window.dispatchEvent(new CustomEvent(CONSENT_CHANGED_EVENT, { detail: value }));
+  } catch {
+    // Ignora.
+  }
+
   // Registro de auditoria no backend (best-effort; nunca bloqueia a UI).
   // Rota pública (aceita visitante anônimo) — sem Authorization: Bearer.
-  void fetch(apiUrl("/api/consent"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(value),
-  }).catch(() => {
-    // Falha ao registrar não deve impedir o usuário de navegar.
-  });
+  try {
+    void fetch(apiUrl("/api/consent"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-anonymous-id": getAnonymousId() },
+      body: serialized,
+      keepalive: true,
+    }).catch(() => undefined);
+  } catch {
+    // apiUrl() lança se NEXT_PUBLIC_API_URL não foi definido no build.
+  }
   return value;
 }
 

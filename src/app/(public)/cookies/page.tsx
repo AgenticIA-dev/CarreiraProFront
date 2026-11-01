@@ -35,7 +35,7 @@ export default function CookiesPage() {
     <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
       <h1 className="text-2xl font-semibold text-ink-900 sm:text-3xl">Cookies</h1>
       <p className="mt-2 text-sm text-ink-500">
-        Explicamos abaixo cada categoria de cookie usada no CarreiraPro. Você pode ajustar suas
+        Explicamos abaixo cada categoria de cookie usada no VoceUP. Você pode ajustar suas
         preferências a qualquer momento nesta página.
       </p>
 

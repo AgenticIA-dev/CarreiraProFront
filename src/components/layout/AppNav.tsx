@@ -24,7 +24,7 @@ export function SidebarNav() {
   return (
     <nav aria-label="Navegação principal" className="hidden w-60 shrink-0 border-r border-ink-100 bg-white p-4 md:flex md:flex-col">
       <Link href="/app" className="mb-6 px-2 text-lg font-semibold tracking-tight text-ink-900">
-        Carreira<span className="text-brand-600">Pro</span>
+        Voce<span className="text-brand-600">UP</span>
       </Link>
       <ul className="flex flex-col gap-1">
         {items.map((item) => {

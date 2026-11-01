@@ -16,7 +16,7 @@ async function refreshAccessToken(): Promise<string | null> {
 }
 
 /**
- * fetch autenticado para o backend do CarreiraPro, a partir de componentes
+ * fetch autenticado para o backend do VoceUP, a partir de componentes
  * de cliente ("use client").
  *
  * Anexa o access token da sessão (cookie `cp_access`, emitido a partir da

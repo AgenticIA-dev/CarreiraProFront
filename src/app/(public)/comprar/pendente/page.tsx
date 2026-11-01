@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/Card";
 
 export const metadata: Metadata = {
   title: "Pagamento em análise",
-  description: "Pagamento em análise no CarreiraPro.",
+  description: "Pagamento em análise no VoceUP.",
 };
 
 /**
@@ -22,7 +22,7 @@ export default function CompraPendentePage() {
         <h1 className="text-xl font-semibold text-ink-900">Pagamento em análise</h1>
         <p className="mt-2 text-sm text-ink-500">
           Seu pagamento está sendo processado pelo Mercado Pago. Assim que for aprovado, você
-          recebe por e-mail o convite de acesso ao CarreiraPro — isso pode levar alguns minutos
+          recebe por e-mail o convite de acesso ao VoceUP — isso pode levar alguns minutos
           (ou mais, dependendo do meio de pagamento escolhido).
         </p>
         <Link href="/" className="mt-5 inline-flex h-10 items-center justify-center rounded-xl border border-ink-200 px-5 text-sm font-medium text-ink-900 hover:bg-ink-50">
