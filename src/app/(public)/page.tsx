@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/Card";
 import { getApiBaseUrl } from "@/lib/api/config";
 
 export const metadata: Metadata = {
-  title: "VoceUP — Treine sua entrevista e seu pedido de aumento",
+  title: "VoceUP — Chegue na entrevista sabendo o que responder",
   description:
     "Perguntas reais de entrevista e de aumento e promoção, simulador por áudio com análise por inteligência artificial e respostas pelo método STAR. Preparação real, sem promessas de emprego garantido.",
 };
@@ -119,11 +119,11 @@ export default async function LandingPage() {
       {/* Topo */}
       <section className="mx-auto max-w-4xl px-4 pb-16 pt-16 text-center sm:px-6 sm:pt-24">
         <h1 className="text-3xl font-semibold tracking-tight text-ink-900 sm:text-5xl">
-          Treine sua próxima entrevista — e o seu pedido de aumento — com análise de nível sênior.
+          Chegue na sua entrevista (ou reunião de promoção) sabendo exatamente o que responder.
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-base text-ink-500 sm:text-lg">
-          Perguntas reais de entrevista e de aumento e promoção, simulador por áudio com análise por inteligência
-          artificial e respostas pelo método STAR.
+          Simule cenários reais por áudio, receba análises imediatas de nível sênior e estruture suas conquistas
+          com o Método STAR.
           {durationShort ? ` Pratique à vontade durante ${durationShort}.` : " Pratique à vontade."}
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
