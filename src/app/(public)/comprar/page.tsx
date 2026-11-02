@@ -23,7 +23,7 @@ interface CheckoutInfo {
 }
 
 const included = [
-  "Banco com 146 perguntas reais: 126 de entrevista (6 competências × 3 níveis) e 20 de aumento e promoção",
+  "Banco de perguntas reais de entrevista (6 competências, 3 níveis) e de aumento e promoção",
   "Gerador de respostas pelo método STAR no padrão sênior",
   "Simulador por áudio com análise detalhada da sua resposta",
   "Modo de preparação para pedir aumento ou promoção",
