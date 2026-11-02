@@ -114,7 +114,8 @@ export default function ComprarPage() {
         </div>
         <p className="mt-1 text-sm text-ink-600">
           {info?.accessLabel ?? "Duração do acesso a definir"} · pagamento único, sem renovação automática ·
-          as formas de pagamento disponíveis aparecem na próxima etapa, no Mercado Pago
+          Pix, cartão de débito ou cartão de crédito à vista ou em até 3x (juros do parcelamento por conta do
+          comprador), no Mercado Pago
         </p>
         <ul className="mt-4 space-y-1.5">
           {included.map((item) => (
