@@ -22,7 +22,13 @@ export async function POST(request: NextRequest) {
   try {
     backendResponse = await fetch(`${getApiBaseUrl()}/api/auth/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        // IP e navegador reais do usuário (o backend vê só o IP deste servidor):
+        // vão para o histórico de acessos do admin.
+        "x-client-ip": clientIp(request),
+        "x-client-user-agent": (request.headers.get("user-agent") ?? "").slice(0, 300),
+      },
       body,
       cache: "no-store",
     });
@@ -48,4 +54,9 @@ export async function POST(request: NextRequest) {
   const response = NextResponse.json({ ok: true });
   setSessionCookies(response, data.session);
   return response;
+}
+
+function clientIp(request: NextRequest): string {
+  const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  return (forwarded || request.headers.get("x-real-ip") || "").slice(0, 64);
 }

@@ -56,8 +56,10 @@ export default function PrivacidadePage() {
               transcrita e <strong>não é armazenada</strong> por nós; guardamos somente o texto da transcrição.
             </li>
             <li>
-              <strong>Dados técnicos:</strong> endereço IP, navegador e registros de acesso, usados para
-              segurança (por exemplo, limitar tentativas de login) e para cumprir o Marco Civil da Internet.
+              <strong>Dados técnicos e registros de uso:</strong> data e hora de cada acesso, endereço IP,
+              navegador e as funções usadas (simulações, transcrições, respostas STAR, perguntas favoritas), com a
+              estimativa do custo de processamento de cada uma. São usados para segurança, prevenção a fraudes,
+              gestão do serviço, comprovação da prestação do serviço e cumprimento do Marco Civil da Internet.
             </li>
             <li>
               <strong>Preferências de cookies:</strong> sua escolha de consentimento (aceitar, rejeitar ou
@@ -82,8 +84,19 @@ export default function PrivacidadePage() {
               registros de acesso (art. 7º, II).
             </li>
             <li>
-              <strong>Segurança e prevenção a fraudes</strong> — proteger contas e evitar abuso (legítimo
-              interesse, art. 7º, IX).
+              <strong>Segurança e prevenção a fraudes</strong> — proteger contas e evitar abuso, como
+              compartilhamento de login e uso desproporcional seguido de reembolso (legítimo interesse, art. 7º,
+              IX).
+            </li>
+            <li>
+              <strong>Defesa em disputas</strong> — usar os registros de uso como prova em contestações de
+              pagamento (chargeback), reclamações e processos (exercício regular de direitos, art. 7º, VI).
+            </li>
+            <li>
+              <strong>Gestão e melhoria do serviço</strong> — medir o uso e o custo de cada função e oferecer
+              renovação ou conteúdos relacionados ao que você já usa dentro da plataforma (legítimo interesse,
+              art. 7º, IX). E-mails promocionais só são enviados com o seu consentimento, e você pode cancelar a
+              qualquer momento.
             </li>
             <li>
               <strong>Medição e marketing</strong> — somente com o seu consentimento nos cookies, que pode ser
@@ -155,8 +168,10 @@ export default function PrivacidadePage() {
               do consumidor (em geral, 5 anos).
             </li>
             <li>
-              <strong>Registros de acesso:</strong> 6 meses, como exige o Marco Civil da Internet (Lei nº
-              12.965/2014).
+              <strong>Registros de acesso e de uso:</strong> no mínimo 6 meses, como exige o Marco Civil da
+              Internet (Lei nº 12.965/2014), e até 5 anos após a compra quando necessários para comprovar a
+              prestação do serviço ou para a defesa em disputas e processos (prazo prescricional do art. 27 do
+              Código de Defesa do Consumidor).
             </li>
             <li>
               <strong>Registro de consentimento de cookies:</strong> pelo tempo necessário para comprovar a sua

@@ -64,8 +64,9 @@ export default function TermosPage() {
               página de compra
             </Link>{" "}
             antes do pagamento e valem as condições exibidas no momento da contratação. O pagamento é único
-            (sem renovação automática) e processado pelo Mercado Pago, nas formas que ele disponibilizar. Não
-            armazenamos dados do seu cartão.
+            (sem renovação automática) e processado pelo Mercado Pago, por Pix, cartão de débito ou cartão de
+            crédito à vista ou em até 3 parcelas (os juros do parcelamento, quando houver, são cobrados pelo
+            Mercado Pago do comprador). Não armazenamos dados do seu cartão.
           </p>
           <p>
             Após a aprovação do pagamento, enviamos ao e-mail informado um convite para criar a senha. Se o
@@ -91,19 +92,66 @@ export default function TermosPage() {
             Pago — o prazo para o valor aparecer depende do meio de pagamento e da operadora do cartão.
           </p>
           <p>
-            Com o reembolso, o acesso à plataforma é encerrado. Pedidos de reembolso fora do prazo de
+            Com o reembolso (ou com o estorno/contestação da compra junto ao meio de pagamento), o acesso à
+            plataforma é <strong>encerrado imediatamente</strong>. Pedidos de reembolso fora do prazo de
             arrependimento serão analisados caso a caso, sem prejuízo dos seus direitos previstos em lei.
           </p>
-        </Section>
-
-        <Section n={6} title="Sua conta">
           <p>
-            O acesso é pessoal e intransferível. Você é responsável por manter sua senha em sigilo e por todas as
-            atividades feitas com a sua conta. O compartilhamento de conta pode levar à suspensão do acesso.
+            O direito de arrependimento é integralmente preservado. Ele deve, porém, ser exercido de boa-fé, nos
+            termos da seção 7.
           </p>
         </Section>
 
-        <Section n={7} title="Uso adequado">
+        <Section n={6} title="Licença de uso e sua conta">
+          <p>
+            A compra concede uma <strong>licença de uso pessoal, intransferível e não exclusiva</strong>, pelo
+            prazo contratado. Ela não transfere a propriedade de nenhum conteúdo da plataforma. Você é
+            responsável por manter sua senha em sigilo e por todas as atividades feitas com a sua conta.
+          </p>
+          <p>
+            É proibido compartilhar, ceder, emprestar ou revender o login; usar a mesma conta para mais de uma
+            pessoa; e copiar, extrair em massa, reproduzir, distribuir ou publicar o banco de perguntas, as
+            análises e os materiais da plataforma (inclusive por meio de robôs, scripts ou capturas
+            sistemáticas). O descumprimento autoriza a suspensão ou o encerramento do acesso, sem prejuízo da
+            reparação de eventuais danos.
+          </p>
+        </Section>
+
+        <Section n={7} title="Boa-fé, abuso de direito e enriquecimento sem causa">
+          <p>
+            A relação entre você e o VoceUP é regida pela <strong>boa-fé objetiva</strong> (art. 4º, III, do
+            Código de Defesa do Consumidor e art. 422 do Código Civil). O conteúdo da plataforma é digital e é
+            entregue no momento em que é acessado: o uso dele é a própria fruição do serviço contratado.
+          </p>
+          <p>
+            Configura <strong>abuso de direito</strong> (art. 187 do Código Civil) e{" "}
+            <strong>enriquecimento sem causa</strong> (art. 884 do Código Civil), por exemplo: contratar o
+            serviço com o propósito de consumir ou extrair, em poucos dias, parte substancial do conteúdo e, em
+            seguida, pedir o reembolso ou contestar o pagamento; compartilhar o acesso com terceiros; ou repetir
+            compras e pedidos de reembolso para usar o serviço sem pagar.
+          </p>
+          <p>
+            Nesses casos, o VoceUP poderá: (a) encerrar o acesso imediatamente; (b) apresentar os registros de
+            uso da conta (seção 8) ao meio de pagamento, a órgãos de defesa do consumidor e ao Poder Judiciário,
+            em contestações, disputas e processos; (c) recusar novas contratações da mesma pessoa; e (d) buscar,
+            pelas vias legais, a compensação proporcional ao conteúdo efetivamente usufruído. Nada nesta seção
+            impede o exercício regular do direito de arrependimento por quem age de boa-fé.
+          </p>
+        </Section>
+
+        <Section n={8} title="Registros de uso">
+          <p>
+            Para operar o serviço, prevenir fraudes e comprovar a prestação do serviço, registramos o uso da
+            conta: data e hora de acesso, endereço IP, navegador, e as funções utilizadas (perguntas favoritadas,
+            simulações, transcrições e respostas STAR geradas). Esses registros seguem a{" "}
+            <Link href="/privacidade" className="text-brand-600 underline">
+              Política de Privacidade
+            </Link>{" "}
+            e podem ser usados como prova nas situações da seção 7.
+          </p>
+        </Section>
+
+        <Section n={9} title="Uso adequado">
           <p>Ao usar o VoceUP, você concorda em:</p>
           <ul className="list-disc space-y-1 pl-5">
             <li>Fornecer informações verdadeiras sobre suas experiências profissionais.</li>
@@ -113,14 +161,14 @@ export default function TermosPage() {
             </li>
             <li>
               Não tentar acessar áreas administrativas ou dados de outras pessoas, nem automatizar o uso da
-              plataforma de forma abusiva (os recursos de IA têm limite diário de uso).
+              plataforma (os recursos de IA têm limite diário de uso, para garantir o funcionamento para todos).
             </li>
             <li>Não inserir dados pessoais sensíveis de terceiros nas suas respostas.</li>
           </ul>
           <p>O descumprimento destas regras pode levar à suspensão ou ao encerramento do acesso.</p>
         </Section>
 
-        <Section n={8} title="Conteúdo gerado por inteligência artificial">
+        <Section n={10} title="Conteúdo gerado por inteligência artificial">
           <p>
             O gerador STAR e as análises do simulador usam inteligência artificial ou regras automáticas e
             trabalham somente com as informações que você fornece: a plataforma não inventa experiências,
@@ -129,7 +177,7 @@ export default function TermosPage() {
           </p>
         </Section>
 
-        <Section n={9} title="Disponibilidade e responsabilidade">
+        <Section n={11} title="Disponibilidade e responsabilidade">
           <p>
             Trabalhamos para manter a plataforma disponível e segura, mas podem ocorrer interrupções para
             manutenção ou por falhas de terceiros (hospedagem, internet, provedores de IA). Nesses casos,
@@ -138,22 +186,23 @@ export default function TermosPage() {
           </p>
         </Section>
 
-        <Section n={10} title="Propriedade intelectual">
+        <Section n={12} title="Propriedade intelectual">
           <p>
-            A marca VoceUP, o banco de perguntas, os textos e a estrutura pedagógica da plataforma pertencem ao
-            VoceUP e não podem ser copiados ou revendidos. O conteúdo que você cria (respostas, transcrições)
-            pertence a você.
+            A marca VoceUP, o banco de perguntas, os textos, as análises e a estrutura pedagógica da plataforma
+            são protegidos pela Lei de Direitos Autorais (Lei nº 9.610/1998) e pela Lei de Propriedade
+            Industrial (Lei nº 9.279/1996). Pertencem ao VoceUP e não podem ser copiados, reproduzidos,
+            distribuídos ou revendidos. O conteúdo que você cria (respostas, transcrições) pertence a você.
           </p>
         </Section>
 
-        <Section n={11} title="Alterações destes termos">
+        <Section n={13} title="Alterações destes termos">
           <p>
             Podemos atualizar estes Termos. Mudanças relevantes serão avisadas na plataforma ou por e-mail, e não
             alteram as condições de preço e duração já contratadas.
           </p>
         </Section>
 
-        <Section n={12} title="Lei aplicável e foro">
+        <Section n={14} title="Lei aplicável e foro">
           <p>
             Estes Termos seguem a legislação brasileira. Fica eleito o foro do domicílio do consumidor. Antes de
             qualquer medida, fale com a gente em {email} — queremos resolver.

@@ -22,8 +22,8 @@ export const company = {
 };
 
 /** Data de vigência dos Termos e da Política (igual a TERMS_VERSION do backend). */
-export const LEGAL_VERSION = "2026-10-29";
-export const LEGAL_VERSION_LABEL = "29 de outubro de 2026";
+export const LEGAL_VERSION = "2026-11-02";
+export const LEGAL_VERSION_LABEL = "2 de novembro de 2026";
 
 export const companyComplete = Boolean(
   company.legalName && company.document && company.address && company.supportEmail
