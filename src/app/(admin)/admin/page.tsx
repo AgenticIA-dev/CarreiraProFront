@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { BarChart3, ListChecks, Users } from "lucide-react";
+import { BarChart3, FlaskConical, ListChecks, Users } from "lucide-react";
 import { requireAdmin } from "@/lib/auth/session";
 import { apiFetchServer } from "@/lib/api/server";
 import { Card } from "@/components/ui/Card";
@@ -19,7 +19,7 @@ export default async function AdminHomePage() {
     <div className="mx-auto max-w-4xl space-y-6">
       <h1 className="text-2xl font-semibold text-ink-900">Administração</h1>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Link href="/admin/usuarios">
           <Card className="transition-colors hover:border-brand-300">
             <Users className="mb-2 h-5 w-5 text-brand-600" aria-hidden="true" />
@@ -32,6 +32,13 @@ export default async function AdminHomePage() {
             <BarChart3 className="mb-2 h-5 w-5 text-brand-600" aria-hidden="true" />
             <p className="text-sm font-semibold text-ink-900">Uso e custos</p>
             <p className="text-sm text-ink-500">Por usuário, com upsell e planilha</p>
+          </Card>
+        </Link>
+        <Link href="/admin/testadores">
+          <Card className="transition-colors hover:border-brand-300">
+            <FlaskConical className="mb-2 h-5 w-5 text-brand-600" aria-hidden="true" />
+            <p className="text-sm font-semibold text-ink-900">Testadores</p>
+            <p className="text-sm text-ink-500">Acesso de cortesia com convite</p>
           </Card>
         </Link>
         <Link href="/admin/perguntas">

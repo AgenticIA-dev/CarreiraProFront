@@ -15,6 +15,7 @@ interface UsageRow {
   email: string;
   role: string;
   status: string;
+  isCourtesy?: boolean;
   purchasedAt: string | null;
   paymentMethod: string | null;
   installments: number | null;
@@ -51,6 +52,8 @@ interface UsageReport {
     aiCostBrl: number;
     marginBrl: number;
     refunds: number;
+    testers?: number;
+    testersAiCostBrl?: number;
   };
   users: UsageRow[];
 }
@@ -95,6 +98,10 @@ export default async function AdminUsoPage() {
     { label: "Custo de IA", value: brl(t.aiCostBrl) },
     { label: "Margem", value: brl(t.marginBrl) },
     { label: "Reembolsos", value: String(t.refunds) },
+    {
+      label: "Testadores (cortesia)",
+      value: `${t.testers ?? 0} · IA ${brl(t.testersAiCostBrl ?? 0)}`,
+    },
   ];
 
   return (
@@ -117,7 +124,7 @@ export default async function AdminUsoPage() {
         </Link>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-7">
         {summary.map((s) => (
           <Card key={s.label} className="p-4">
             <p className="text-xs uppercase text-ink-500">{s.label}</p>
@@ -155,6 +162,7 @@ export default async function AdminUsoPage() {
                     <p className="font-medium text-ink-900">{u.name ?? "—"}</p>
                     <p className="text-xs text-ink-500">{u.email}</p>
                     {u.role === "admin" ? <p className="text-xs text-brand-600">admin</p> : null}
+                    {u.isCourtesy ? <p className="text-xs text-amber-700">cortesia</p> : null}
                   </td>
                   <td className="px-3 py-3">
                     <Badge tone={statusTone[u.status] ?? "neutral"}>{u.status}</Badge>
