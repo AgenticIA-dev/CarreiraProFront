@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { ChevronDown, Mic, Star } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
+import { AudioPlayButton } from "@/components/ui/AudioPlayButton";
+import { apiFetch } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
 import type { QuestionRow } from "@/types/database";
 
@@ -33,6 +36,12 @@ export function QuestionCard({
   onToggleFavorite?: (id: string) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [tab, setTab] = useState<"como" | "dicas">("como");
+  const hasComo = Boolean(question.evaluates || question.ideal_structure);
+  const hasDicas = Boolean(question.tips?.length || question.things_to_avoid?.length);
+  const showTabs = hasComo && hasDicas;
+  // Perguntas de fallback local (sem linha no banco) não têm áudio para gerar.
+  const hasAudio = !question.id.startsWith("seed-");
 
   return (
     <div className="rounded-2xl border border-ink-200 bg-white shadow-card">
@@ -51,11 +60,13 @@ export function QuestionCard({
         </div>
         <div className="flex shrink-0 items-center gap-1">
           {onToggleFavorite && (
-            <span
+            <motion.span
               role="button"
               tabIndex={0}
               aria-pressed={isFavorite}
               aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+              whileTap={{ scale: 1.3 }}
+              transition={{ duration: 0.15 }}
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleFavorite(question.id);
@@ -69,9 +80,12 @@ export function QuestionCard({
               className="rounded-lg p-1.5 hover:bg-ink-100"
             >
               <Star
-                className={cn("h-4 w-4", isFavorite ? "fill-amber-400 text-amber-400" : "text-ink-300")}
+                className={cn(
+                  "h-4 w-4 transition-colors",
+                  isFavorite ? "fill-gold-500 text-gold-500" : "text-ink-300"
+                )}
               />
-            </span>
+            </motion.span>
           )}
           <ChevronDown
             className={cn("h-4 w-4 shrink-0 text-ink-400 transition-transform", open && "rotate-180")}
@@ -80,40 +94,95 @@ export function QuestionCard({
         </div>
       </button>
 
-      {open && (
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            key="detail"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
         <div className="space-y-3 border-t border-ink-100 p-4 text-sm text-ink-600">
-          {question.evaluates && (
-            <div>
-              <p className="font-medium text-ink-900">O que o entrevistador está avaliando</p>
-              <p className="mt-0.5">{question.evaluates}</p>
+          {hasAudio && (
+            <AudioPlayButton
+              label="Ouvir pergunta"
+              fetchAudio={() => apiFetch(`/api/questions/${question.id}/audio/question`)}
+            />
+          )}
+          {showTabs && (
+            <div className="flex gap-1 rounded-lg bg-ink-50 p-1 text-xs font-medium">
+              <button
+                type="button"
+                onClick={() => setTab("como")}
+                className={cn(
+                  "flex-1 rounded-md px-2 py-1.5 transition-colors",
+                  tab === "como" ? "bg-white text-ink-900 shadow-sm" : "text-ink-500 hover:text-ink-700"
+                )}
+              >
+                Como responder
+              </button>
+              <button
+                type="button"
+                onClick={() => setTab("dicas")}
+                className={cn(
+                  "flex-1 rounded-md px-2 py-1.5 transition-colors",
+                  tab === "dicas" ? "bg-white text-ink-900 shadow-sm" : "text-ink-500 hover:text-ink-700"
+                )}
+              >
+                Dicas e erros
+              </button>
             </div>
           )}
-          {question.ideal_structure && (
-            <div>
-              <p className="font-medium text-ink-900">Estrutura recomendada</p>
-              <p className="mt-0.5">{question.ideal_structure}</p>
-            </div>
-          )}
-          {question.tips && question.tips.length > 0 && (
-            <div>
-              <p className="font-medium text-ink-900">Dicas</p>
-              <ul className="mt-0.5 list-disc space-y-0.5 pl-5">
-                {question.tips.map((tip, i) => (
-                  <li key={i}>{tip}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {question.things_to_avoid && question.things_to_avoid.length > 0 && (
-            <div>
-              <p className="font-medium text-ink-900">Erros comuns a evitar</p>
-              <ul className="mt-0.5 list-disc space-y-0.5 pl-5">
-                {question.things_to_avoid.map((item, i) => (
-                  <li key={i}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {hasComo && (!showTabs || tab === "como") ? (
+            <>
+              {question.evaluates && (
+                <div>
+                  <p className="font-medium text-ink-900">O que o entrevistador está avaliando</p>
+                  <p className="mt-0.5">{question.evaluates}</p>
+                </div>
+              )}
+              {question.ideal_structure && (
+                <div>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-medium text-ink-900">Estrutura recomendada</p>
+                    {hasAudio && (
+                      <AudioPlayButton
+                        label="Ouvir"
+                        fetchAudio={() => apiFetch(`/api/questions/${question.id}/audio/ideal`)}
+                      />
+                    )}
+                  </div>
+                  <p className="mt-0.5">{question.ideal_structure}</p>
+                </div>
+              )}
+            </>
+          ) : null}
+          {hasDicas && (!showTabs || tab === "dicas") ? (
+            <>
+              {question.tips && question.tips.length > 0 && (
+                <div>
+                  <p className="font-medium text-ink-900">Dicas</p>
+                  <ul className="mt-0.5 list-disc space-y-0.5 pl-5">
+                    {question.tips.map((tip, i) => (
+                      <li key={i}>{tip}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {question.things_to_avoid && question.things_to_avoid.length > 0 && (
+                <div>
+                  <p className="font-medium text-ink-900">Erros comuns a evitar</p>
+                  <ul className="mt-0.5 list-disc space-y-0.5 pl-5">
+                    {question.things_to_avoid.map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </>
+          ) : null}
           {!question.id.startsWith("seed-") && (
             <Link
               href={`/app/simulador?pergunta=${question.id}`}
@@ -124,7 +193,9 @@ export function QuestionCard({
             </Link>
           )}
         </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

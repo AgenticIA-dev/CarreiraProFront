@@ -17,6 +17,9 @@ export type UserStatus =
 
 export type UserRole = "user" | "admin";
 
+/** Nível de experiência declarado pelo usuário — calibra a régua da IA e a dificuldade padrão das perguntas. */
+export type UserExperienceLevel = "junior" | "pleno" | "senior";
+
 /** Status de pagamento, nos termos documentados pela API do Mercado Pago. */
 export type PurchaseStatus =
   | "pending"
@@ -51,6 +54,7 @@ export interface UserRow {
   last_login_at: string | null;
   access_expires_at?: string | null;
   is_courtesy?: boolean;
+  experience_level?: UserExperienceLevel | null;
 }
 
 export interface PurchaseRow {

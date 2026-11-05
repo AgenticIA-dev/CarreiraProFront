@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Briefcase, Keyboard, Mic, RotateCcw, Shuffle, TrendingUp, Volume2 } from "lucide-react";
 import { AudioRecorder, type RecordingResult } from "@/components/interview/AudioRecorder";
@@ -100,6 +101,22 @@ export default function SimuladorPage() {
       void startSimulation({ questionId: id });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Pré-seleciona o nível de dificuldade a partir do nível de experiência
+  // salvo no perfil (item C da avaliação de UX) — o usuário ainda pode trocar.
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await apiFetch("/api/account/me");
+        const data = (await res.json().catch(() => null)) as { profile?: { experience_level?: string | null } } | null;
+        const level = data?.profile?.experience_level;
+        const mapped = level === "junior" ? "iniciante" : level === "senior" ? "avancada" : level === "pleno" ? "intermediaria" : null;
+        if (mapped) setDifficulty(mapped);
+      } catch {
+        // Sem profile disponível: mantém "Todos os níveis" (comportamento de sempre).
+      }
+    })();
   }, []);
 
   async function startSimulation(options: { questionId?: string } = {}) {
@@ -337,6 +354,13 @@ export default function SimuladorPage() {
                 </Chip>
               ))}
             </div>
+            <p className="mt-1.5 text-xs text-ink-400">
+              Pré-selecionado a partir do seu nível de experiência em{" "}
+              <Link href="/app/perfil" className="underline hover:text-ink-600">
+                Perfil
+              </Link>
+              .
+            </p>
           </div>
 
           <p className="mt-4 text-xs text-ink-500">

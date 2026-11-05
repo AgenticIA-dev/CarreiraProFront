@@ -1,4 +1,5 @@
 import * as React from "react";
+import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger";
@@ -18,7 +19,13 @@ const sizeClasses: Record<Size, string> = {
   lg: "h-12 px-6 text-base rounded-xl gap-2",
 };
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+/**
+ * Omite os handlers de drag/animação que o HTML tipa de um jeito e a Motion
+ * de outro (conflito de tipos conhecido ao trocar `<button>` por
+ * `motion.button`) — nenhum deles é usado neste componente.
+ */
+export interface ButtonProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onDrag" | "onDragStart" | "onDragEnd" | "onAnimationStart"> {
   variant?: Variant;
   size?: Size;
   isLoading?: boolean;
@@ -27,10 +34,12 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "primary", size = "md", isLoading, disabled, children, ...props }, ref) => {
     return (
-      <button
+      <motion.button
         ref={ref}
         disabled={disabled || isLoading}
         aria-busy={isLoading}
+        whileTap={disabled || isLoading ? undefined : { scale: 0.97 }}
+        transition={{ duration: 0.1 }}
         className={cn(
           "inline-flex items-center justify-center font-medium transition-colors",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
@@ -48,7 +57,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           />
         )}
         {children}
-      </button>
+      </motion.button>
     );
   }
 );

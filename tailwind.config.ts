@@ -3,11 +3,18 @@ import type { Config } from "tailwindcss";
 /**
  * Design tokens do VoceUP.
  *
- * Paleta definida no prompt mestre:
- *  - #0F172A (slate-900) — base escura, texto principal, superfícies de destaque
- *  - #2563EB (blue-600)  — cor de ação/marca
- *  - tons neutros        — fundo, bordas, texto secundário
- *  - verde               — reservado para estados positivos (sucesso, aprovação)
+ * Paleta atualizada em 05/11/2026 (avaliação de animações/cores, projeto "B&B"
+ * não — projeto "animações e cores" no Claude):
+ *  - #0F3B4D (azul petróleo) — cor de ação/marca (era #2563EB/blue-600)
+ *  - #C9A227 (dourado discreto) — destaque pontual: progresso, conquistas,
+ *    selos de nível concluído. Nunca em texto corrido ou botões grandes.
+ *  - tons neutros (ink)      — fundo, bordas, texto secundário, inalterado
+ *  - verde abafado (positive) — estados positivos (sucesso, aprovação)
+ *
+ * `brand.DEFAULT`/`brand.600` são o que a maior parte do app já usa
+ * (bg-brand-600, hover:bg-brand-700, ring-brand-500, bg-brand-50/text-brand-700
+ * nos badges) — trocar os valores aqui já repinta o app inteiro sem precisar
+ * caçar cada uso.
  */
 const config: Config = {
   content: ["./src/**/*.{ts,tsx}"],
@@ -15,17 +22,30 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          DEFAULT: "#2563EB",
-          50: "#EFF6FF",
-          100: "#DBEAFE",
-          200: "#BFDBFE",
-          300: "#93C5FD",
-          400: "#60A5FA",
-          500: "#3B82F6",
-          600: "#2563EB",
-          700: "#1D4ED8",
-          800: "#1E40AF",
-          900: "#1E3A8A",
+          DEFAULT: "#0F3B4D",
+          50: "#EEF5F7",
+          100: "#D6E7EC",
+          200: "#AFCFD8",
+          300: "#85B3C0",
+          400: "#5A96A6",
+          500: "#1D5C73",
+          600: "#0F3B4D",
+          700: "#0B2E3D",
+          800: "#082430",
+          900: "#051920",
+        },
+        gold: {
+          DEFAULT: "#C9A227",
+          50: "#FBF6E8",
+          100: "#F5EAC6",
+          200: "#ECD98E",
+          300: "#E0C563",
+          400: "#D4B13E",
+          500: "#C9A227",
+          600: "#AD8A1E",
+          700: "#8C6F18",
+          800: "#6B5512",
+          900: "#4A3B0C",
         },
         ink: {
           DEFAULT: "#0F172A",
@@ -41,11 +61,11 @@ const config: Config = {
           900: "#0F172A",
         },
         positive: {
-          DEFAULT: "#16A34A",
+          DEFAULT: "#2F8F5B",
           50: "#F0FDF4",
           100: "#DCFCE7",
-          600: "#16A34A",
-          700: "#15803D",
+          600: "#2F8F5B",
+          700: "#256F46",
         },
       },
       fontFamily: {

@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/Card";
+import { AnimatedBar } from "@/components/ui/AnimatedBar";
 import type { ScoreBreakdown as ScoreBreakdownType } from "@/types/database";
 
 const labels: Record<keyof ScoreBreakdownType, string> = {
@@ -27,18 +28,13 @@ export function ScoreBreakdownCard({
       </div>
 
       <div className="space-y-3">
-        {(Object.keys(labels) as (keyof ScoreBreakdownType)[]).map((key) => (
+        {(Object.keys(labels) as (keyof ScoreBreakdownType)[]).map((key, i) => (
           <div key={key}>
             <div className="mb-1 flex items-center justify-between text-xs text-ink-500">
               <span>{labels[key]}</span>
               <span>{breakdown[key]}/25</span>
             </div>
-            <div className="h-2 rounded-full bg-ink-100">
-              <div
-                className="h-2 rounded-full bg-brand-600"
-                style={{ width: `${(breakdown[key] / 25) * 100}%` }}
-              />
-            </div>
+            <AnimatedBar percent={(breakdown[key] / 25) * 100} delay={i * 0.08} />
           </div>
         ))}
       </div>

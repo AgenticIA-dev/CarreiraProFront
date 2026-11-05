@@ -17,8 +17,19 @@ body {
 
 /* Foco visível consistente para navegação por teclado (WCAG 2.4.7). */
 :focus-visible {
-  outline: 2px solid #2563eb;
+  outline: 2px solid #0f3b4d;
   outline-offset: 2px;
+}
+
+/* Quem pede menos movimento (acessibilidade) não recebe animações da Motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Classe utilitária para esconder visualmente mas manter acessível a leitores de tela. */

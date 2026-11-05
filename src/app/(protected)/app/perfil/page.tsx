@@ -30,8 +30,8 @@ export default async function PerfilPage() {
       </Card>
 
       <Card>
-        <h2 className="text-sm font-semibold text-ink-900">Nome</h2>
-        <ProfileForm initialName={profile.name ?? ""} />
+        <h2 className="text-sm font-semibold text-ink-900">Nome e nível de experiência</h2>
+        <ProfileForm initialName={profile.name ?? ""} initialExperienceLevel={profile.experience_level ?? null} />
       </Card>
 
       <Card>
