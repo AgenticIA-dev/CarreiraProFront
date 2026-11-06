@@ -27,7 +27,7 @@ export default async function AdminComissoesPage() {
         <h1 className="text-2xl font-semibold text-ink-900">Comissões de parceiros</h1>
         <p className="mt-1 text-sm text-ink-500">
           Uma linha por venda aprovada atribuída a um parceiro (cupom usado ou indicação da amostra grátis), com o
-          percentual da faixa de meta vigente na hora da venda. O pagamento é sempre manual: clique em "Pagar" e
+          percentual da faixa de meta vigente na hora da venda. O pagamento é sempre manual: clique em &quot;Pagar&quot; e
           informe a conta Mercado Pago do parceiro.
         </p>
       </div>

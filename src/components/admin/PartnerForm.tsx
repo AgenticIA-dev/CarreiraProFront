@@ -210,7 +210,7 @@ export function PartnerForm({ partner, onSaved }: { partner?: PartnerRow; onSave
           Adicionar faixa
         </Button>
         <p className="mt-1.5 text-xs text-ink-400">
-          Ex.: 20% da venda 1 até a 20, 25% da 21 até a 30, 30% da 31 em diante (deixe "até" vazio na última).
+          Ex.: 20% da venda 1 até a 20, 25% da 21 até a 30, 30% da 31 em diante (deixe &quot;até&quot; vazio na última).
         </p>
       </div>
 
