@@ -182,6 +182,35 @@ export interface PartnerRow {
   pendingCommissionBrl: number;
 }
 
+/**
+ * Preço, duração do acesso e título editáveis pelo Admin (ver
+ * admin/settings.ts no backend). `null`/`false` = o Admin ainda não
+ * configurou esse campo — o backend cai para a variável de ambiente.
+ */
+export interface CheckoutSettingsRow {
+  priceBrl: number | null;
+  accessLifetime: boolean;
+  accessMonths: number | null;
+  title: string | null;
+}
+
+/**
+ * Campanha promocional (ver admin/campaigns.ts no backend). `code` nulo =
+ * desconto automático (aplicado direto no preço); `code` preenchido = cupom
+ * que o visitante digita no checkout. Nunca gera comissão e nunca acumula
+ * com outro desconto — vale sempre o maior percentual.
+ */
+export interface CampaignRow {
+  id: string;
+  code: string | null;
+  discount_percent: number;
+  active: boolean;
+  starts_at: string | null;
+  ends_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export type PartnerCommissionStatus = "pending" | "paid";
 
 /** Comissão calculada por venda (ver admin/partner-commissions.ts). */

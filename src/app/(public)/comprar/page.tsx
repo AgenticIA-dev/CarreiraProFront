@@ -21,6 +21,10 @@ interface CheckoutInfo {
   title: string;
   accessLabel: string | null;
   termsVersion: string;
+  // Melhor desconto vigente agora (campanha automática ou, se um cupom foi
+  // digitado e é válido, o maior entre os dois) — mostrado mesmo sem cupom.
+  discountPercent: number | null;
+  priceWithDiscount: number | null;
   coupon?: { valid: boolean; discountPercent: number; priceWithDiscount: number | null };
 }
 
@@ -132,10 +136,10 @@ export default function ComprarPage() {
       <Card className="mt-6">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <p className="text-sm font-semibold text-ink-900">{info?.title ?? "VoceUP — Acesso completo"}</p>
-          {info?.coupon?.valid && info.coupon.priceWithDiscount !== null ? (
+          {info?.priceWithDiscount != null ? (
             <p className="text-2xl font-semibold text-ink-900">
               <span className="mr-2 text-base font-normal text-ink-400 line-through">{info.priceFormatted}</span>
-              {priceFormatter.format(info.coupon.priceWithDiscount)}
+              {priceFormatter.format(info.priceWithDiscount)}
             </p>
           ) : (
             <p className="text-2xl font-semibold text-ink-900">
@@ -209,7 +213,9 @@ export default function ComprarPage() {
                 <p className={`mt-1.5 text-sm ${info.coupon.valid ? "text-positive-700" : "text-ink-500"}`}>
                   {info.coupon.valid
                     ? `Cupom válido: ${info.coupon.discountPercent}% de desconto aplicado.`
-                    : "Cupom inválido ou expirado — a compra segue pelo preço cheio."}
+                    : info.discountPercent
+                      ? `Cupom inválido ou expirado — vale o desconto promocional ativo (${info.discountPercent}%).`
+                      : "Cupom inválido ou expirado — a compra segue pelo preço cheio."}
                 </p>
               )}
             </div>
@@ -243,8 +249,8 @@ export default function ComprarPage() {
 
             <Button type="submit" className="w-full" isLoading={isLoading} disabled={!accepted}>
               Ir para pagamento
-              {info?.coupon?.valid && info.coupon.priceWithDiscount !== null
-                ? ` · ${priceFormatter.format(info.coupon.priceWithDiscount)}`
+              {info?.priceWithDiscount != null
+                ? ` · ${priceFormatter.format(info.priceWithDiscount)}`
                 : info?.priceFormatted
                   ? ` · ${info.priceFormatted}`
                   : ""}

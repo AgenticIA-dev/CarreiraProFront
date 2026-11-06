@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { BarChart3, FlaskConical, Handshake, ListChecks, Users, Wallet } from "lucide-react";
+import { BarChart3, FlaskConical, Handshake, ListChecks, Settings, Tag, Users, Wallet } from "lucide-react";
 import { requireAdmin } from "@/lib/auth/session";
 import { apiFetchServer } from "@/lib/api/server";
 import { Card } from "@/components/ui/Card";
@@ -60,6 +60,20 @@ export default async function AdminHomePage() {
             <Wallet className="mb-2 h-5 w-5 text-brand-600" aria-hidden="true" />
             <p className="text-sm font-semibold text-ink-900">Comissões</p>
             <p className="text-sm text-ink-500">Vendas de parceiros e pagamento</p>
+          </Card>
+        </Link>
+        <Link href="/admin/configuracoes">
+          <Card className="transition-colors hover:border-brand-300">
+            <Settings className="mb-2 h-5 w-5 text-brand-600" aria-hidden="true" />
+            <p className="text-sm font-semibold text-ink-900">Configurações</p>
+            <p className="text-sm text-ink-500">Preço, duração do acesso e título</p>
+          </Card>
+        </Link>
+        <Link href="/admin/campanhas">
+          <Card className="transition-colors hover:border-brand-300">
+            <Tag className="mb-2 h-5 w-5 text-brand-600" aria-hidden="true" />
+            <p className="text-sm font-semibold text-ink-900">Campanhas</p>
+            <p className="text-sm text-ink-500">Descontos promocionais e cupons</p>
           </Card>
         </Link>
       </div>
