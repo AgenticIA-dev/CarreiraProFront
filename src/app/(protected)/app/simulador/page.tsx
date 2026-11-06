@@ -20,7 +20,8 @@ type Stage =
   | "reviewing-transcript"
   | "scoring"
   | "completed"
-  | "error";
+  | "error"
+  | "trial-limit";
 
 interface QuestionInfo {
   questionId: string;
@@ -134,7 +135,14 @@ export default function SimuladorPage() {
           };
       const res = await apiFetch("/api/interview/question", { method: "POST", body: JSON.stringify(body) });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error ?? "");
+      if (!res.ok) {
+        if (data.trialLimitReached) {
+          setErrorMessage(data.error ?? "Você já usou sua simulação grátis.");
+          setStage("trial-limit");
+          return;
+        }
+        throw new Error(data.error ?? "");
+      }
       setSessionId(data.session.id);
       setQuestion(data.question);
       setPool(options.questionId ? null : (data.pool ?? null));
@@ -385,6 +393,18 @@ export default function SimuladorPage() {
             </Button>
           }
         />
+      )}
+
+      {stage === "trial-limit" && (
+        <Card className="text-center">
+          <p className="text-sm font-semibold text-ink-900">Você atingiu o limite da amostra grátis</p>
+          <p className="mt-1.5 text-sm text-ink-500">{errorMessage}</p>
+          <Link href="/comprar">
+            <Button type="button" className="mt-4">
+              Assinar o VoceUP
+            </Button>
+          </Link>
+        </Card>
       )}
 
       {question && ["ready", "recording-done", "transcribing", "reviewing-transcript", "scoring"].includes(stage) && (

@@ -112,12 +112,14 @@ export function StarForm({ questionId }: { questionId?: string | null }) {
   const [notes, setNotes] = useState<string[]>([]);
   const [analysis, setAnalysis] = useState<StarAnalysis | null>(null);
   const [view, setView] = useState<"completa" | "curta" | "partes">("completa");
+  const [trialLimitReached, setTrialLimitReached] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setGenerated(null);
     setAnalysis(null);
+    setTrialLimitReached(false);
 
     const empty = fields.filter((f) => !values[f.key].trim()).map((f) => f.label);
     if (empty.length > 0) {
@@ -138,6 +140,11 @@ export function StarForm({ questionId }: { questionId?: string | null }) {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
+        if (data.trialLimitReached) {
+          setTrialLimitReached(true);
+          setError(data.error ?? "Gerar respostas STAR é um recurso pago.");
+          return;
+        }
         setError(data.error ?? "Não foi possível gerar sua resposta agora.");
         return;
       }
@@ -195,10 +202,19 @@ export function StarForm({ questionId }: { questionId?: string | null }) {
           </div>
         ))}
 
-        {error && (
+        {error && !trialLimitReached && (
           <p role="alert" className="text-sm text-red-600">
             {error}
           </p>
+        )}
+
+        {trialLimitReached && (
+          <div role="alert" className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">
+            <p>{error}</p>
+            <Link href="/comprar" className="mt-2 inline-block font-medium text-brand-700 underline">
+              Assinar o VoceUP
+            </Link>
+          </div>
         )}
 
         <Button type="submit" isLoading={isLoading}>

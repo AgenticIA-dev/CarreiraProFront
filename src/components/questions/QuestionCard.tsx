@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ChevronDown, Mic, Star } from "lucide-react";
+import { ChevronDown, Lock, Mic, Star } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { AudioPlayButton } from "@/components/ui/AudioPlayButton";
 import { apiFetch } from "@/lib/api/client";
@@ -31,7 +31,7 @@ export function QuestionCard({
   isFavorite,
   onToggleFavorite,
 }: {
-  question: QuestionRow;
+  question: QuestionRow & { locked?: boolean };
   isFavorite?: boolean;
   onToggleFavorite?: (id: string) => void;
 }) {
@@ -42,6 +42,9 @@ export function QuestionCard({
   const showTabs = hasComo && hasDicas;
   // Perguntas de fallback local (sem linha no banco) não têm áudio para gerar.
   const hasAudio = !question.id.startsWith("seed-");
+  // Amostra grátis: só a 1ª pergunta de cada competência vem destravada (ver
+  // questions/list.ts no backend).
+  const locked = Boolean(question.locked);
 
   return (
     <div className="rounded-2xl border border-ink-200 bg-white shadow-card">
@@ -55,6 +58,12 @@ export function QuestionCard({
           <div className="mb-2 flex flex-wrap items-center gap-1.5">
             <Badge tone="brand">{categoryLabels[question.category] ?? question.category}</Badge>
             <Badge tone="neutral">{difficultyLabels[question.difficulty]}</Badge>
+            {locked && (
+              <Badge tone="warning">
+                <Lock className="mr-1 inline h-3 w-3" aria-hidden="true" />
+                Amostra
+              </Badge>
+            )}
           </div>
           <p className="text-sm font-medium text-ink-900">{question.question}</p>
         </div>
@@ -105,6 +114,21 @@ export function QuestionCard({
             className="overflow-hidden"
           >
         <div className="space-y-3 border-t border-ink-100 p-4 text-sm text-ink-600">
+          {locked ? (
+            <div className="rounded-xl bg-amber-50 p-3 text-amber-900">
+              <p className="font-medium">Conteúdo bloqueado na amostra grátis</p>
+              <p className="mt-0.5 text-amber-800">
+                Assine o VoceUP para ver como responder, dicas e treinar esta pergunta no simulador.
+              </p>
+              <Link
+                href="/comprar"
+                className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
+              >
+                Assinar o VoceUP
+              </Link>
+            </div>
+          ) : (
+            <>
           {hasAudio && (
             <AudioPlayButton
               label="Ouvir pergunta"
@@ -191,6 +215,8 @@ export function QuestionCard({
               <Mic className="h-4 w-4" aria-hidden="true" />
               Treinar no simulador
             </Link>
+          )}
+            </>
           )}
         </div>
           </motion.div>

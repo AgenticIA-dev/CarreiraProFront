@@ -16,11 +16,15 @@ const emailSchema = z.object({
 
 interface CheckoutInfo {
   configured: boolean;
+  price: number | null;
   priceFormatted: string | null;
   title: string;
   accessLabel: string | null;
   termsVersion: string;
+  coupon?: { valid: boolean; discountPercent: number; priceWithDiscount: number | null };
 }
+
+const priceFormatter = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
 const included = [
   "Banco de perguntas reais de entrevista (6 competências, 3 níveis) e de aumento e promoção",
@@ -44,16 +48,31 @@ export default function ComprarPage() {
   const [info, setInfo] = useState<CheckoutInfo | null>(null);
   const [infoError, setInfoError] = useState(false);
 
+  // Cupom de parceiro (programa de influenciadores): pré-preenchido quando a
+  // pessoa vem de um link com ?cupom=CODIGO, e também editável à mão.
+  const [couponCode, setCouponCode] = useState("");
+  useEffect(() => {
+    const fromUrl = new URLSearchParams(window.location.search).get("cupom");
+    if (fromUrl) setCouponCode(fromUrl.trim().toUpperCase());
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
-    fetch(apiUrl("/api/checkout/info"))
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
-      .then((data: CheckoutInfo) => !cancelled && setInfo(data))
-      .catch(() => !cancelled && setInfoError(true));
+    // Pequeno debounce: evita uma chamada a cada tecla digitada no campo de cupom.
+    const timer = setTimeout(() => {
+      const query = couponCode.trim() ? `?coupon=${encodeURIComponent(couponCode.trim())}` : "";
+      fetch(apiUrl(`/api/checkout/info${query}`))
+        .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+        .then((data: CheckoutInfo) => !cancelled && setInfo(data))
+        .catch(() => !cancelled && setInfoError(true));
+    }, 300);
     return () => {
       cancelled = true;
+      clearTimeout(timer);
     };
-  }, []);
+    // Reconsulta ao mudar o cupom, para mostrar o preço com desconto antes de pagar.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [couponCode]);
 
   const termsMismatch = Boolean(info && info.termsVersion !== LEGAL_VERSION);
   const canSell = Boolean(info?.configured) && companyComplete && !termsMismatch;
@@ -78,7 +97,12 @@ export default function ComprarPage() {
       const response = await fetch(apiUrl("/api/checkout/create-preference"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: parsed.data.email, acceptedTerms: true, termsVersion: LEGAL_VERSION }),
+        body: JSON.stringify({
+          email: parsed.data.email,
+          acceptedTerms: true,
+          termsVersion: LEGAL_VERSION,
+          ...(couponCode.trim() ? { couponCode: couponCode.trim() } : {}),
+        }),
       });
 
       const data = (await response.json().catch(() => null)) as { initPoint?: string; error?: string } | null;
@@ -108,9 +132,16 @@ export default function ComprarPage() {
       <Card className="mt-6">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <p className="text-sm font-semibold text-ink-900">{info?.title ?? "VoceUP — Acesso completo"}</p>
-          <p className="text-2xl font-semibold text-ink-900">
-            {info?.priceFormatted ?? (infoError ? "—" : "…")}
-          </p>
+          {info?.coupon?.valid && info.coupon.priceWithDiscount !== null ? (
+            <p className="text-2xl font-semibold text-ink-900">
+              <span className="mr-2 text-base font-normal text-ink-400 line-through">{info.priceFormatted}</span>
+              {priceFormatter.format(info.coupon.priceWithDiscount)}
+            </p>
+          ) : (
+            <p className="text-2xl font-semibold text-ink-900">
+              {info?.priceFormatted ?? (infoError ? "—" : "…")}
+            </p>
+          )}
         </div>
         <p className="mt-1 text-sm text-ink-600">
           {info?.accessLabel ?? "Duração do acesso a definir"} · pagamento único, sem renovação automática ·
@@ -165,6 +196,24 @@ export default function ComprarPage() {
               <FieldError>{fieldError}</FieldError>
             </div>
 
+            <div>
+              <Label htmlFor="coupon">Cupom de desconto (opcional)</Label>
+              <Input
+                id="coupon"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                placeholder="Ex.: PARCEIRO10"
+                maxLength={40}
+              />
+              {couponCode.trim() && info?.coupon && (
+                <p className={`mt-1.5 text-sm ${info.coupon.valid ? "text-positive-700" : "text-ink-500"}`}>
+                  {info.coupon.valid
+                    ? `Cupom válido: ${info.coupon.discountPercent}% de desconto aplicado.`
+                    : "Cupom inválido ou expirado — a compra segue pelo preço cheio."}
+                </p>
+              )}
+            </div>
+
             <label className="flex items-start gap-2 text-sm text-ink-700">
               <input
                 type="checkbox"
@@ -193,7 +242,12 @@ export default function ComprarPage() {
             )}
 
             <Button type="submit" className="w-full" isLoading={isLoading} disabled={!accepted}>
-              Ir para pagamento{info?.priceFormatted ? ` · ${info.priceFormatted}` : ""}
+              Ir para pagamento
+              {info?.coupon?.valid && info.coupon.priceWithDiscount !== null
+                ? ` · ${priceFormatter.format(info.coupon.priceWithDiscount)}`
+                : info?.priceFormatted
+                  ? ` · ${info.priceFormatted}`
+                  : ""}
             </Button>
 
             <p className="flex items-start gap-2 text-xs text-ink-400">

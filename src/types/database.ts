@@ -55,6 +55,9 @@ export interface UserRow {
   access_expires_at?: string | null;
   is_courtesy?: boolean;
   experience_level?: UserExperienceLevel | null;
+  referred_by_partner_id?: string | null;
+  /** Amostra grátis: acesso restrito (1 simulação, STAR bloqueado, 1 pergunta por competência). */
+  is_trial?: boolean;
 }
 
 export interface PurchaseRow {
@@ -68,6 +71,7 @@ export interface PurchaseRow {
   purchased_at: string | null;
   updated_at: string;
   created_at: string;
+  partner_id?: string | null;
 }
 
 export interface QuestionRow {
@@ -150,4 +154,48 @@ export interface WebhookEventRow {
   status: "received" | "processed" | "ignored" | "error";
   error_message: string | null;
   created_at: string;
+}
+
+/** Faixa de comissão por meta de vendas (ver migration Partners no backend). */
+export interface PartnerCommissionTierRow {
+  id: string;
+  partner_id: string;
+  min_sale_number: number;
+  max_sale_number: number | null;
+  percent: number;
+  created_at: string;
+}
+
+/** Parceiro do programa de influenciadores, com faixas e totais agregados (ver admin/partners.ts). */
+export interface PartnerRow {
+  id: string;
+  name: string;
+  email: string | null;
+  coupon_code: string;
+  discount_percent: number;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+  tiers: PartnerCommissionTierRow[];
+  salesCount: number;
+  totalCommissionBrl: number;
+  pendingCommissionBrl: number;
+}
+
+export type PartnerCommissionStatus = "pending" | "paid";
+
+/** Comissão calculada por venda (ver admin/partner-commissions.ts). */
+export interface PartnerCommissionRow {
+  id: string;
+  partner_id: string;
+  user_id: string;
+  purchase_id: string | null;
+  sale_number: number;
+  percent_applied: number;
+  amount_brl: number | string;
+  status: PartnerCommissionStatus;
+  paid_at: string | null;
+  created_at: string;
+  partner_name: string | null;
+  user_email: string | null;
 }
